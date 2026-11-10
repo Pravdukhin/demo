@@ -44,6 +44,7 @@ a{color:inherit}
 .shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(8,20,36,.94) 0,rgba(8,20,36,.82) calc(var(--colw) * .72),rgba(8,20,36,0) calc(var(--colw) + 160px)),linear-gradient(180deg,rgba(8,20,36,.55) 0,rgba(8,20,36,0) 130px)}
 .hint{position:absolute;left:50%;transform:translateX(-50%);bottom:84px;font-size:14px;color:var(--ink);background:rgba(8,20,36,.6);padding:7px 14px;border-radius:999px;pointer-events:none;white-space:nowrap;transition:opacity .35s}
 .L-pass.used .hint{opacity:0}
+body.tv .rail,body.tv .hint,body.tv .mstep{display:none}
 .rail{position:absolute;left:calc(var(--colw) + 70px);right:36px;bottom:34px;height:2px;background:rgba(232,236,241,.26);touch-action:none}
 .rail i{position:absolute;left:0;top:0;bottom:0;background:rgba(232,236,241,.5);width:0}
 .rail b{position:absolute;top:-5px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber-glow);left:0;pointer-events:none;z-index:2}
@@ -201,7 +202,7 @@ body.editing .planbox{outline:1px dashed var(--amber)}
 <div class="ghost" id="ghost" hidden></div>
 <div class="toast" id="toast"></div>
 
-<script src="config.js?v=r4"></script>
+<script src="config.js?v=r5"></script>
 <script>
 (function(){
 "use strict";
@@ -209,7 +210,7 @@ var C=window.DEMO_CONFIG; if(!C){document.body.insertAdjacentHTML('afterbegin','
 var STORE='demo-seating-'+C.id;
 /* ---------- тексты интерфейса ---------- */
 var UI={
- ru:{mark:"демо · объект изменён",steps:["Зал","Рассадка","Вид из зоны","Ваш зал"],up:"Предыдущий шаг",dn:"Следующий шаг",
+ ru:{mark:"демо · объект изменён",steps:["Зал","Рассадка","Ваш зал"],up:"Предыдущий шаг",dn:"Следующий шаг",
   hLabel:"Демо",p1:"Столы уже стоят в проекте у техников и декораторов, а гости пересаживаются до последнего дня.",
   p2:"Здесь мероприятие открывается по ссылке. Зал построен по скану площадки и остаётся неизменным: двигаются только гости.",
   tables:"столов",seats:"мест",sHint:"← ведите по кадру →",go2:"Рассадка ↓",
@@ -218,12 +219,12 @@ var UI={
   copy:"Скопировать рассадку списком",copied:"Список скопирован",copyFail:"Список выделен ниже, скопируйте его вручную",reset:"Вернуть исходную",resetDone:"Рассадка возвращена",
   table:"Стол {n}",seatsOf:"{a} из {b}",free:"свободно",loudNote:"Рядом колонки, здесь громко.",
   pick:"Нажмите на имя, чтобы увидеть соседей.",nb:"Соседи: {a} и {b}",nb1:"Сосед: {a}",nb0:"Соседей пока нет",picked:"{name}: нажмите на стол или место",
-  goView:"Вид из зоны стола ↓",
+  goView:"Посмотреть из-за стола",tvLabel:"Вид от стола",tvLead:"Так сцену видно с этого стола.",tvBack:"← Обратно к схеме",tvLoad:"Загружаю вид…",
   vLabel:"Вид из зоны",vLead:"Ближайший к столу рендер проекта: так видно из этой части зала.",prevT:"← стол",nextT:"стол →",toPlan:"Выбрать на плане",
   moved:"{name} → стол {n}",unseated:"{name} без места",full:"Стол {n} занят полностью",
   eLabel:"Когда это делается",eTitle:"Такой зал для вашего мероприятия",eText:"Модель зала и рассадка собираются на этапе разработки технического проекта, вместе с декораторами. Ссылку получают заказчик, агентство и подрядчики, все видят одно и то же.",
   eText2:"Приглашайте на осмотр площадки и в проект.",cBtn:"Обсудить проект",wLink:"Этапы работы и стоимость ↗",foot:"Гости и имена вымышлены. Площадка изменена.",listNone:"Без места"},
- en:{mark:"demo · venue altered",steps:["Hall","Seating","Zone view","Your hall"],up:"Previous step",dn:"Next step",
+ en:{mark:"demo · venue altered",steps:["Hall","Seating","Your hall"],up:"Previous step",dn:"Next step",
   hLabel:"Demo",p1:"Tables are already placed in the technical and decor drawings, yet guests keep changing seats until the last day.",
   p2:"Here the event opens from a link. The hall is built from a scan of the venue and stays the same: only the guests move.",
   tables:"tables",seats:"seats",sHint:"← drag across the frame →",go2:"Seating ↓",
@@ -232,7 +233,7 @@ var UI={
   copy:"Copy seating as a list",copied:"List copied",copyFail:"The list is selected below, copy it manually",reset:"Restore original",resetDone:"Seating restored",
   table:"Table {n}",seatsOf:"{a} of {b}",free:"free",loudNote:"Next to speakers, it is loud here.",
   pick:"Tap a name to see the neighbours.",nb:"Neighbours: {a} and {b}",nb1:"Neighbour: {a}",nb0:"No neighbours yet",picked:"{name}: tap a table or a seat",
-  goView:"View from this table zone ↓",
+  goView:"See it from this table",tvLabel:"View from the table",tvLead:"This is how the stage looks from this table.",tvBack:"← Back to the plan",tvLoad:"Loading the view…",
   vLabel:"Zone view",vLead:"The project render closest to the table: this is the view from this part of the hall.",prevT:"← table",nextT:"table →",toPlan:"Choose on the plan",
   moved:"{name} → table {n}",unseated:"{name} has no seat",full:"Table {n} is full",
   eLabel:"When this is done",eTitle:"This hall for your event",eText:"The hall model and seating are built at the technical design stage, together with the decorators. The client, the agency and the contractors get one link and see the same thing.",
@@ -260,11 +261,11 @@ function name(id){return G[id][lang()]||G[id].ru}
 function seatedCount(){var c=0;for(var id in at)if(at[id])c++;return c}
 
 /* ---------- состояние ---------- */
-var step=0,NSTEP=4,curTable=null,picked=null,edit=false,editSel=null,addArm=false;
+var step=0,NSTEP=3,tv=null,curTable=null,picked=null,edit=false,editSel=null,addArm=false;
 var W=C.plan.w,H=C.plan.h;
 
 /* ---------- шаги ---------- */
-var layers=[$('Lpass'),$('Lplan'),$('Lview'),$('Lend')];
+var layers=[$('Lpass'),$('Lplan'),$('Lend')];
 var anim=null;
 function PFv(){return C.passes[passIdx].pf||.8}
 function stops(){var p=C.passes[passIdx],a=(p.stations||[{f:0},{f:p.n-1}]).map(function(o){return o.f/(p.n-1)*PFv()});a.push(1);return a}
@@ -273,6 +274,7 @@ function animPos(to,ms,done){wStop();cancelAnimationFrame(anim);var from=pos,t0=
 function legMs(a,b){var p=C.passes[passIdx],pf=PFv(),fr=Math.abs(Math.min(b,pf)-Math.min(a,pf))/pf*(p.n-1);return Math.max(700,fr/(p.fps||24)*1000*.6+(Math.max(a,b)>pf?900:0))}
 function back0(){if(step!==0||anim||!hasMorph()||pos<=0)return false;var sp=stops(),tg=0;for(var q=sp.length-1;q>=0;q--)if(sp[q]<pos-.004){tg=sp[q];break}animPos(tg,legMs(pos,tg));return true}
 function go(i,quiet){
+  if(tv)return;
   if(i<0&&back0())return;
   i=Math.max(0,Math.min(NSTEP-1,i));if(i===step&&!quiet)return;
   if(anim)return;
@@ -284,14 +286,13 @@ function go(i,quiet){
 function setStep(i){step=i;if(step!==0)clearMorph();
   layers.forEach(function(l,k){l.classList.toggle('on',k===step)});
   if(step===0)loadPack(passIdx);
-  if(step===2)showView();
   renderTicks();renderPanel();
   requestAnimationFrame(layout);
 }
 function renderTicks(){
   var T=$('ticks');T.setAttribute('aria-label',lang()==='ru'?'Шаги':'Steps');
-  T.innerHTML=t('steps').map(function(s,i){return '<li class="'+(i===step?'on':(i<step?'done':''))+'"><button data-s="'+i+'">'+esc(s)+'</button></li>'}).join('');
-  $('cnt').textContent=('0'+(step+1))+' / 0'+NSTEP;
+  var S=tv?1:step;T.innerHTML=t('steps').map(function(s,i){return '<li class="'+(i===S?'on':(i<S?'done':''))+'"><button data-s="'+i+'">'+esc(s)+'</button></li>'}).join('');
+  $('cnt').textContent=('0'+((tv?1:step)+1))+' / 0'+NSTEP;
   $('mUp').disabled=step===0&&pos<=0;$('mDn').disabled=step===NSTEP-1;
   $('mUp').setAttribute('aria-label',t('up'));$('mDn').setAttribute('aria-label',t('dn'));
 }
@@ -301,9 +302,12 @@ $('mUp').onclick=function(){go(step-1)};$('mDn').onclick=function(){go(step+1)};
 /* ---------- панель шага ---------- */
 function renderPanel(){
   var P=$('pin'),h='';
-  if(step===0){
+  if(tv){
+    h='<p class="label">'+esc(t('tvLabel'))+'</p><h2>'+esc(t('table',{n:tv.n}))+'</h2><p class="lead">'+esc(t('tvLead'))+'</p>'+
+      '<div class="row" style="margin-top:14px">'+(tv.ready?'<button class="btn" id="tvBack">'+esc(t('tvBack'))+'</button>':'<span class="small">'+esc(t('tvLoad'))+'</span>')+'</div>';
+  }else if(step===0){
     h='<p class="label">'+esc(t('hLabel'))+'</p><h1>'+esc(t('title'))+'</h1><p class="lead">'+esc(t('p1'))+'</p><p class="lead">'+esc(t('p2'))+'</p>'+
-      (C.passes.length>1?'<div class="tabs" role="group">'+C.passes.map(function(p,i){return '<button data-pass="'+i+'" aria-pressed="'+(i===passIdx)+'">'+esc(t('pass'+p.id))+'</button>'}).join('')+'</div>':'')+
+      (false?'<div class="tabs" role="group">'+C.passes.map(function(p,i){return '<button data-pass="'+i+'" aria-pressed="'+(i===passIdx)+'">'+esc(t('pass'+p.id))+'</button>'}).join('')+'</div>':'')+
       '<div class="facts"><div><b>'+tables.length+'</b><span>'+esc(t('tables'))+'</span></div><div><b>'+tables.reduce(function(a,x){return a+x.pos.length},0)+'</b><span>'+esc(t('seats'))+'</span></div></div>'+
       '<div class="next"><button class="alink" data-go="1">'+esc(t('go2'))+'</button></div>';
   }else if(step===1){
@@ -312,10 +316,6 @@ function renderPanel(){
       '<div class="count"><b>'+a+' '+esc(t('of'))+' '+guests.length+'</b><span>'+esc(t('seated'))+'</span></div>'+
       (phone()?'':'<p class="small" style="margin-bottom:14px">'+esc(t('rLead'))+'</p>')+cardHTML()+trayHTML()+
       '<div class="tools"><button class="btn" id="copyBtn">'+esc(t('copy'))+'</button><button class="ghostlink" id="resetBtn">'+esc(t('reset'))+'</button></div><textarea class="copybox" id="copyBox" readonly hidden></textarea>';
-  }else if(step===2){
-    var tb=byN[curTable];
-    h='<p class="label">'+esc(t('vLabel'))+'</p><h2>'+esc(t('table',{n:tb.n}))+'</h2><p class="lead">'+esc(t('vLead'))+'</p>'+
-      '<div class="row" style="margin-top:12px"><button class="pill" id="prevT">'+esc(t('prevT'))+'</button><button class="pill" id="nextT">'+esc(t('nextT'))+'</button><button class="alink" data-go="1">'+esc(t('toPlan'))+'</button></div>';
   }else{
     h='<p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
       '<div class="row" style="margin-top:14px"><a class="btn" href="'+esc(C.links.contact)+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
@@ -323,11 +323,12 @@ function renderPanel(){
   }
   P.innerHTML=h;P.scrollTop=0;
   if($('copyBtn')){$('copyBtn').onclick=copyList;$('resetBtn').onclick=resetAll}
-  if($('prevT')){$('prevT').onclick=function(){stepTable(-1)};$('nextT').onclick=function(){stepTable(1)}}
+  if($('tvBack'))$('tvBack').onclick=closeTV;
 }
 $('pin').addEventListener('click',function(e){
   var g=e.target.closest('[data-go]');if(g){go(+g.dataset.go);return}
   var p=e.target.closest('[data-pass]');if(p){setPass(+p.dataset.pass);return}
+  var v=e.target.closest('[data-tv]');if(v){openTV(+v.dataset.tv);return}
 });
 function cardHTML(){
   if(curTable==null)return '';
@@ -336,7 +337,7 @@ function cardHTML(){
   if(tb.loud)h+='<p class="note">'+esc(t('loudNote'))+'</p>';
   h+='<ol class="seats">';
   occ.forEach(function(id,s){var isNb=nb.some(function(q){return q[0]===tb.n&&q[1]===s});h+='<li data-s="'+s+'"'+(isNb?' class="nb"':'')+'><span class="n">'+(s+1)+'</span>'+(id?chipHTML(id):'<i class="free">'+esc(t('free'))+'</i>')+'</li>'});
-  h+='</ol><p class="nbline">'+esc(nbText())+'</p><button class="alink" data-go="2" style="margin-top:6px">'+esc(t('goView'))+'</button></div>';
+  h+='</ol><p class="nbline">'+esc(nbText())+'</p>'+(tvPass(tb.n)>=0?'<button class="btn" data-tv="'+tb.n+'" style="margin-top:10px">'+esc(t('goView'))+'</button>':'')+'</div>';
   return h;
 }
 function trayHTML(){
@@ -477,6 +478,12 @@ var tt=null;function toast(s){var e=$('toast');e.textContent=s;e.classList.add('
 var cv=$('cv'),cx=cv.getContext('2d'),passIdx=0,pos=0,packs={},sheets={},pend={},lru=[],wantDraw=0,lastDrawn=0;
 var small=Math.min(window.innerWidth,screen.width||9999)<760;
 function setPass(i){cancelAnimationFrame(anim);anim=null;wStop();clearMorph();passIdx=i;pos=0;drawPoster();loadPack(i);draw();updBar();buildRail()}
+function tvPass(n){for(var i=0;i<C.passes.length;i++)if(C.passes[i].table===n)return i;return -1}
+function openTV(n){var i=tvPass(n);if(i<0||anim||tv||edit||step!==1)return;tv={n:n,i:i,ready:false};wStop();passIdx=i;pos=1;loadPack(i);
+  step=0;layers.forEach(function(l,k){l.classList.toggle('on',k===0)});document.body.classList.add('tv');renderTicks();renderPanel();
+  requestAnimationFrame(function(){layout();draw();
+    (function wait(){if(!tv||tv.i!==i)return;var pk=packs[i];if(pk&&pk.got>=pk.ns){cv.width=pk.g.w;cv.height=pk.g.h;layout();draw();animPos(0,legMs(1,0),function(){if(tv){tv.ready=true;renderPanel()}})}else{draw();setTimeout(wait,150)}})()})}
+function closeTV(){if(!tv||anim)return;animPos(1,legMs(0,1),function(){tv=null;document.body.classList.remove('tv');passIdx=0;pos=1;var pk=packs[0];if(pk&&pk.ready){cv.width=pk.g.w;cv.height=pk.g.h}setStep(1)})}
 function drawPoster(){var p=C.passes[passIdx],im=new Image(),i=passIdx;im.onload=function(){if(i===passIdx&&(!packs[i]||!packs[i].ready))cx.drawImage(im,0,0,cv.width,cv.height)};im.src=p.poster}
 function curSheet(pk){return Math.floor(Math.min(1,pos/PFv())*(pk.n-1)/pk.per)}
 function loadPack(i){
@@ -537,7 +544,7 @@ function morph(m){
   svg.style.opacity=Math.max(0,(m-.45)/.55);cv.style.opacity=1-Math.max(0,Math.min(1,(m-.25)/.5));
 }
 (function(){var S=$('Lpass'),st=null;
-  S.addEventListener('pointerdown',function(e){wStop();st={x:e.clientX,y:e.clientY,p:pos,h:null,id:e.pointerId}});
+  S.addEventListener('pointerdown',function(e){if(tv)return;wStop();st={x:e.clientX,y:e.clientY,p:pos,h:null,id:e.pointerId}});
   S.addEventListener('pointermove',function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;
     if(st.h===null){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;st.h=Math.abs(dx)>=Math.abs(dy);st.ly=e.clientY;try{S.setPointerCapture(st.id)}catch(_){}}
     if(!st.h){if(e.pointerType==='touch'&&step===0&&hasMorph()&&!anim&&!edit&&packs[passIdx]&&packs[passIdx].ready){var d=st.ly-e.clientY;st.ly=e.clientY;if(d)wheelScrub(d*4)}return}
@@ -548,13 +555,14 @@ function morph(m){
 /* ---------- смена шага: колесо, клавиши, вертикальный свайп по сцене ---------- */
 var wAcc=0,wLock=0;
 window.addEventListener('wheel',function(e){
-  if(edit)return;var p=e.target.closest&&e.target.closest('.pin');
+  if(edit)return;if(tv){e.preventDefault();return}var p=e.target.closest&&e.target.closest('.pin');
   if(p&&p.scrollHeight>p.clientHeight+2){var atTop=p.scrollTop<=0,atBot=p.scrollTop+p.clientHeight>=p.scrollHeight-2;if((e.deltaY<0&&!atTop)||(e.deltaY>0&&!atBot))return}
   e.preventDefault();if(step===0&&hasMorph()&&packs[passIdx]&&packs[passIdx].ready){if(!anim)wheelScrub(e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1));wLock=Date.now()+500;return}
   var now=Date.now();if(now<wLock)return;wAcc+=e.deltaY;
   if(Math.abs(wAcc)>40){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
 },{passive:false});
 document.addEventListener('keydown',function(e){
+  if(tv){if(e.key==='Escape')closeTV();return}
   if(e.target.closest&&e.target.closest('input,textarea,select'))return;
   if(e.key==='ArrowDown'||e.key==='PageDown'){go(step+1);e.preventDefault()}
   else if(e.key==='ArrowUp'||e.key==='PageUp'){go(step-1);e.preventDefault()}
