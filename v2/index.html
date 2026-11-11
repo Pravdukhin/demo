@@ -263,6 +263,8 @@ g.on .eyebg{fill:#fff}
   .ctaLine{margin-top:14px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.btn.off{opacity:.55}
+.tools{flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -327,22 +329,22 @@ var UI={
   eText2:"Invite us to the site inspection and into the project.",cBtn:"Discuss a project",wLink:"Work stages and pricing ↗",foot:"Guests and names are fictional. The venue has been altered.",listNone:"No seat"}
 };
 function lang(){var l=(document.documentElement.lang||'ru').slice(0,2).toLowerCase();return l==='ru'?'ru':'en'}
-var OV={ru:{mark:"Гости вымышлены · площадка изменена",hLabel:"Пример проекта",title:"Зал вашего мероприятия по ссылке",
+var OV={ru:{mark:"Гости вымышлены · площадка изменена",hLabel:"Пример проекта",title:"Пройдитесь по залу до мероприятия",
  p1:"Клиент открывает ссылку с телефона или компьютера, проходит по залу и видит, как всё будет.",
- p2:"Зал собран по скану площадки, в нём уже стоят декор и свет проекта. На схеме клиент сам рассаживает гостей и смотрит на сцену из-за стола.",
+ p2:"Зал собран по скану площадки, в нём уже стоят декор и остальной сетап. На схеме можно рассадить гостей и посмотреть, какой вид открывается с их мест.",
  rLabel:"Схема рассадки",viewsNote:"Столы с отметкой открываются в 3D: так гость увидит сцену со своего места.",
- ctaLine:"Собрать так зал вашего мероприятия →",howto:"Этапы работы и стоимость →",
- eLabel:"Для вашего мероприятия",eTitle:"Ваш зал и рассадка по одной ссылке",
- eText:"Три шага: цифровая копия площадки, технический проект в точных размерах, визуализация для клиента. Интерактивный зал с рассадкой входит в третий шаг и собирается вместе с декораторами. Всё вместе от 4 000 €.",
- eText2:"Напишите мне, пришлю 8 вопросов о мероприятии. Через два рабочих дня после ответов подготовлю ориентировочный технический бюджет."},
-en:{mark:"Guests are fictional · venue altered",hLabel:"Sample project",title:"Your event hall, opened from a link",
+ ctaLine:"Хотите так же для своего мероприятия? →",saveBtn:"Сохранить рассадку",savedBtn:"Сохранено",saveDone:"Рассадка сохранена на этом устройстве",howto:"Этапы работы и стоимость →",
+ eLabel:"Для вашего мероприятия",eTitle:"Интерактивная модель зала с рассадкой",
+ eText:"Она собирается на этапе инженерной разработки мероприятия, вместе с декораторами. Что входит в разработку и сколько она стоит, смотрите в разделе «Этапы работы и стоимость».",
+ eText2:"Нажмите «Обсудить проект»: пришлю 8 вопросов о мероприятии, с них и начнём."},
+en:{mark:"Guests are fictional · venue altered",hLabel:"Sample project",title:"Walk through the hall before the event",
  p1:"The client opens the link on a phone or a computer, walks through the hall and sees how it will look.",
- p2:"The hall is built from a scan of the venue, with the project's decor and lighting already in place. On the plan the client seats the guests and checks the view of the stage from a table.",
+ p2:"The hall is built from a scan of the venue, with the decor and the rest of the setup already in place. On the plan you can seat the guests and see the view from their seats.",
  rLabel:"Seating plan",viewsNote:"Marked tables open in 3D: this is how a guest will see the stage from that seat.",
- ctaLine:"Build your event hall this way →",howto:"Work stages and pricing →",
- eLabel:"For your event",eTitle:"Your hall and seating in one link",
- eText:"Three steps: a digital copy of the venue, technical design true to size, visuals for the client. The interactive hall with seating is part of the third step and is built together with the decorators. From €4,000 for all three.",
- eText2:"Message me and I will send 8 questions about the event. Two working days after your answers you get an indicative technical budget."}};
+ ctaLine:"Want the same for your event? →",saveBtn:"Save seating",savedBtn:"Saved",saveDone:"Seating saved on this device",howto:"Work stages and pricing →",
+ eLabel:"For your event",eTitle:"Interactive hall model with seating",
+ eText:"It is built during the engineering design of the event, together with the decorators. What the design includes and what it costs is in “Work stages and pricing”.",
+ eText2:"Press “Discuss a project”: I will send 8 questions about the event, and we start from there."}};
 function t(k,v){var L=lang(),s=(OV[L][k]!=null)?OV[L][k]:(C.text&&C.text[L]&&C.text[L][k]!=null)?C.text[L][k]:(UI[L][k]!=null?UI[L][k]:k);if(v)for(var x in v)s=String(s).split('{'+x+'}').join(v[x]);return s}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -353,10 +355,11 @@ var tables=C.tables,byN={};
 function seatPos(tb){if(tb.seats)return tb.seats;var a=[],R=tb.seatR||tb.r*1.38;for(var k=0;k<tb.count;k++){var g=(-90+(tb.rot||0)+360*k/tb.count)*Math.PI/180;a.push([tb.x+R*Math.cos(g),tb.y+R*Math.sin(g)])}return a}
 function rebuild(){byN={};tables.forEach(function(tb){tb.pos=seatPos(tb);byN[tb.n]=tb})}
 rebuild();
-var guests=C.guests,G={};guests.forEach(function(g){G[g.id]=g});
+var DROP=[9, 10, 27, 36, 45, 63, 72, 81, 82, 92, 109, 118, 119, 135, 144, 155, 156];var guests=C.guests.filter(function(g){return DROP.indexOf(g.id)<0}),G={};guests.forEach(function(g){G[g.id]=g});
 var start={};guests.forEach(function(g){start[g.id]=g.t?[g.t,g.s]:null});
 var at={};
 function loadState(){var sv=null;try{sv=JSON.parse(localStorage.getItem(STORE)||'null')}catch(e){}guests.forEach(function(g){at[g.id]=start[g.id]?start[g.id].slice():null});if(sv&&sv.v===1)for(var id in sv.at)if(G[id])at[id]=sv.at[id]}
+var svState=0;function updSave(){var b=$('saveBtn');if(!b)return;b.textContent=t(svState===2?'savedBtn':'saveBtn');b.classList.toggle('off',svState!==1)}
 function save(){try{localStorage.setItem(STORE,JSON.stringify({v:1,at:at}))}catch(e){}}
 function occupant(n,s){for(var id in at){var p=at[id];if(p&&p[0]===n&&p[1]===s)return +id}return null}
 function seatsOf(n){var tb=byN[n],r=[];for(var s=0;s<tb.pos.length;s++)r.push(occupant(n,s));return r}
@@ -421,14 +424,14 @@ function renderPanel(){
     h='<div class="backrow"><button class="alink" data-go="0">'+esc(t('back3d'))+'</button></div><p class="label">'+esc(t('rLabel'))+'</p><h2>'+esc(t('rTitle'))+'</h2>'+
       '<div class="count"><b>'+a+' '+esc(t('of'))+' '+guests.length+'</b><span>'+esc(t('seated'))+'</span></div>'+
       (phone()?'':'<p class="small" style="margin-bottom:8px">'+esc(t('rLead'))+'</p>')+'<p class="small eyeNote"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>'+esc(t('viewsNote'))+'</p>'+cardHTML()+trayHTML()+
-      '<div class="tools"><button class="btn" id="copyBtn">'+esc(t('copy'))+'</button><button class="ghostlink" id="resetBtn">'+esc(t('reset'))+'</button></div><textarea class="copybox" id="copyBox" readonly hidden></textarea><div class="ctaLine"><button class="alink" data-cta="1">'+esc(t('ctaLine'))+'</button></div>';
+      '<div class="tools"><button class="btn" id="saveBtn">'+esc(t('saveBtn'))+'</button><button class="btn" id="copyBtn">'+esc(t('copy'))+'</button><button class="ghostlink" id="resetBtn">'+esc(t('reset'))+'</button></div><textarea class="copybox" id="copyBox" readonly hidden></textarea><div class="ctaLine"><button class="alink" data-cta="1">'+esc(t('ctaLine'))+'</button></div>';
   }else{
     h='<p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
       '<div class="row" style="margin-top:14px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
       '<p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p>';
   }
   P.innerHTML=h;P.scrollTop=0;
-  if($('copyBtn')){$('copyBtn').onclick=copyList;$('resetBtn').onclick=resetAll}
+  if($('copyBtn')){updSave();$('saveBtn').onclick=function(){save();svState=2;updSave();toast(t('saveDone'))};$('copyBtn').onclick=copyList;$('resetBtn').onclick=resetAll}
   if($('tvBack'))$('tvBack').onclick=closeTV;
 }
 $('pin').addEventListener('click',function(e){
@@ -510,7 +513,7 @@ var rzT=null;window.addEventListener('resize',function(){clearTimeout(rzT);rzT=s
 var lastSheet=-1;if('ResizeObserver' in window)new ResizeObserver(function(){var h=sheetH();if(h!==lastSheet){lastSheet=h;layout()}}).observe($('pin'));
 
 /* ---------- перемещения ---------- */
-function refreshSeat(){renderPlan();if(step===1){var st=$('pin').scrollTop;renderPanel();$('pin').scrollTop=st}save()}
+function refreshSeat(){renderPlan();if(step===1){var st=$('pin').scrollTop;renderPanel();$('pin').scrollTop=st}svState=1;updSave()}
 function flash(n){var g=svg.querySelector('g[data-n="'+n+'"]');if(g){g.classList.remove('flash');void g.getBBox();g.classList.add('flash');setTimeout(function(){g.classList.remove('flash')},1300)}}
 function moveToTable(id,n){if(at[id]&&at[id][0]===n)return;var s=seatsOf(n).indexOf(null);if(s<0){toast(t('full',{n:n}));return}at[id]=[n,s];picked=id;curTable=n;refreshSeat();flash(n);toast(t('moved',{name:name(id),n:n}))}
 function moveToSeat(id,n,s){var o=occupant(n,s);if(o===id)return;var from=at[id]?at[id].slice():null;at[id]=[n,s];if(o)at[o]=from;picked=id;refreshSeat();toast(t('moved',{name:name(id),n:n}))}
@@ -608,7 +611,7 @@ function setLight(l){if(l===light||tv||edit)return;if(anim){cancelAnimationFrame
 $('lights').addEventListener('click',function(e){var b=e.target.closest('[data-light]');if(b)setLight(b.dataset.light)});
 window.__demo=function(){return{light:light,anim:!!anim,tv:tv,edit:edit,step:step,pos:pos,passIdx:passIdx,morph:hasMorph()}};window.__demo.openTV=function(n){selectTable(n);openTV(n)};window.__demo.closeTV=function(){closeTV()};window.__demo.packs=function(){var o={};for(var k in packs)o[C.passes[k].id]=packs[k].got+'/'+packs[k].ns;return o};
 function fin(){if(tv)endTV();else setStep(1)}
-var wIdle=null;function settle(){if(step!==0||anim||edit||!hasMorph())return;var pf=PFv();if(pos<=pf+.004||pos>=1)return;wStop();animPos(pos>pf+(1-pf)*.4?1:pf,380,function(){if(pos>=1)fin()})}
+var wIdle=null,wHold=0,wLast=0;function settle(){if(step!==0||anim||edit||!hasMorph())return;var pf=PFv();if(pos<=pf+.004||pos>=1)return;wStop();animPos(pos>pf+(1-pf)*.4?1:pf,380,function(){if(pos>=1)fin()})}
 function openTV(n){var i=tvPass(n);if(i<0||tv||edit||step!==1)return;if(anim){cancelAnimationFrame(anim);anim=null}
   tv={n:n,i:i,sh:phone()?sheetH():0};wStop();passIdx=i;pos=1;loadPack(i);
   step=0;layers.forEach(function(l,k){l.classList.toggle('on',k===0)});document.body.classList.add('tv');$('Lpass').classList.add('used');buildRail();renderTicks();renderPanel();placeTvBtn();
@@ -691,10 +694,10 @@ function morph(m){
 var wAcc=0,wLock=0;
 window.addEventListener('wheel',function(e){clearTimeout(wIdle);wIdle=setTimeout(settle,320);
   if(edit||ctaOn)return;if(tv){e.preventDefault();var pk0=packs[passIdx];if(!pk0||!pk0.ready)return;if(anim){cancelAnimationFrame(anim);anim=null}wheelScrub(-e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1)*2.2);return}var p=e.target.closest&&e.target.closest('.pin');
-  if(p&&p.scrollHeight>p.clientHeight+2){var atTop=p.scrollTop<=0,atBot=p.scrollTop+p.clientHeight>=p.scrollHeight-2;if((e.deltaY<0&&!atTop)||(e.deltaY>0&&!atBot))return}
+  if(p&&p.scrollHeight>p.clientHeight+2){var atTop=p.scrollTop<=0,atBot=p.scrollTop+p.clientHeight>=p.scrollHeight-2;if((e.deltaY<0&&!atTop)||(e.deltaY>0&&!atBot)){wHold=Date.now();return}}
   e.preventDefault();if(step===0&&hasMorph()&&packs[passIdx]&&packs[passIdx].ready){stopRide();if(!anim)wheelScrub(e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1));wLock=Date.now()+500;return}
-  var now=Date.now();if(now<wLock)return;wAcc+=e.deltaY;
-  if(Math.abs(wAcc)>40){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
+  var now=Date.now();if(now<wLock)return;if(step===1){if(now-wHold<700){wHold=now;wAcc=0;return}if(now-wLast>260)wAcc=0;wLast=now}wAcc+=e.deltaY;
+  if(Math.abs(wAcc)>(step===1?260:40)){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
 },{passive:false});
 document.addEventListener('keydown',function(e){
   if(ctaOn){if(e.key==='Escape')closeCta();return}if(tv){if(e.key==='Escape'||e.key==='ArrowUp'||e.key==='PageUp')closeTV();return}
@@ -709,7 +712,7 @@ document.addEventListener('keydown',function(e){
     ts={x:c.clientX,y:c.clientY,lx:c.clientX,ly:c.clientY,m:null,pin:!!(g.closest&&g.closest('.pin'))}},{passive:true});
   document.addEventListener('touchmove',function(e){if(!ts||drag)return;var c=e.touches[0],dx=c.clientX-ts.x,dy=c.clientY-ts.y;
     if(ts.m===null){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;ts.m=Math.abs(dy)>=Math.abs(dx)?'v':'h';ts.lx=c.clientX;ts.ly=c.clientY}
-    if(step===1){if(ts.pin||ts.m!=='v'||dy<28)return;e.preventDefault();if(anim)return;pos=1;setStep(0);$('Lpass').classList.add('used');ts.ly=c.clientY;return}
+    if(step===1){if(ts.pin||ts.m!=='v'||dy<90)return;e.preventDefault();if(anim)return;pos=1;setStep(0);$('Lpass').classList.add('used');ts.ly=c.clientY;return}
     if(step!==0||!hasMorph())return;e.preventDefault();var pk=packs[passIdx];if(!pk||!pk.ready)return;
     if(anim){if(!tv&&!riding)return;cancelAnimationFrame(anim);anim=null;riding=false}
     var d=ts.m==='v'?(ts.ly-c.clientY):(c.clientX-ts.lx);ts.lx=c.clientX;ts.ly=c.clientY;if(d)wheelScrub((tv?-1:1)*d*4)},{passive:false});
