@@ -257,6 +257,7 @@ g.on .eyebg{fill:#fff}
   .logo{padding:7px 10px;font-size:10px}
   .tb{flex-direction:column;align-items:flex-start;gap:7px;top:calc(12px + env(safe-area-inset-top,0px))}
   .tbt{font-size:11px}.tbt .alink{font-size:11px}
+  .tbt{max-width:196px;line-height:1.3}
   .meta{font-size:11px}
   .tvbtn{font-size:14px;padding:9px 14px 9px 11px}
   .ctaLine{margin-top:14px}
@@ -326,7 +327,23 @@ var UI={
   eText2:"Invite us to the site inspection and into the project.",cBtn:"Discuss a project",wLink:"Work stages and pricing ↗",foot:"Guests and names are fictional. The venue has been altered.",listNone:"No seat"}
 };
 function lang(){var l=(document.documentElement.lang||'ru').slice(0,2).toLowerCase();return l==='ru'?'ru':'en'}
-function t(k,v){var L=lang(),s=(C.text&&C.text[L]&&C.text[L][k]!=null)?C.text[L][k]:(UI[L][k]!=null?UI[L][k]:k);if(v)for(var x in v)s=String(s).split('{'+x+'}').join(v[x]);return s}
+var OV={ru:{mark:"Гости вымышлены · площадка изменена",hLabel:"Пример проекта",title:"Зал вашего мероприятия по ссылке",
+ p1:"Клиент открывает ссылку с телефона или компьютера, проходит по залу и видит, как всё будет.",
+ p2:"Зал собран по скану площадки, в нём уже стоят декор и свет проекта. На схеме клиент сам рассаживает гостей и смотрит на сцену из-за стола.",
+ rLabel:"Схема рассадки",viewsNote:"Столы с отметкой открываются в 3D: так гость увидит сцену со своего места.",
+ ctaLine:"Собрать так зал вашего мероприятия →",howto:"Этапы работы и стоимость →",
+ eLabel:"Для вашего мероприятия",eTitle:"Ваш зал и рассадка по одной ссылке",
+ eText:"Три шага: цифровая копия площадки, технический проект в точных размерах, визуализация для клиента. Интерактивный зал с рассадкой входит в третий шаг и собирается вместе с декораторами. Всё вместе от 4 000 €.",
+ eText2:"Напишите мне, пришлю 8 вопросов о мероприятии. Через два рабочих дня после ответов подготовлю ориентировочный технический бюджет."},
+en:{mark:"Guests are fictional · venue altered",hLabel:"Sample project",title:"Your event hall, opened from a link",
+ p1:"The client opens the link on a phone or a computer, walks through the hall and sees how it will look.",
+ p2:"The hall is built from a scan of the venue, with the project's decor and lighting already in place. On the plan the client seats the guests and checks the view of the stage from a table.",
+ rLabel:"Seating plan",viewsNote:"Marked tables open in 3D: this is how a guest will see the stage from that seat.",
+ ctaLine:"Build your event hall this way →",howto:"Work stages and pricing →",
+ eLabel:"For your event",eTitle:"Your hall and seating in one link",
+ eText:"Three steps: a digital copy of the venue, technical design true to size, visuals for the client. The interactive hall with seating is part of the third step and is built together with the decorators. From €4,000 for all three.",
+ eText2:"Message me and I will send 8 questions about the event. Two working days after your answers you get an indicative technical budget."}};
+function t(k,v){var L=lang(),s=(OV[L][k]!=null)?OV[L][k]:(C.text&&C.text[L]&&C.text[L][k]!=null)?C.text[L][k]:(UI[L][k]!=null?UI[L][k]:k);if(v)for(var x in v)s=String(s).split('{'+x+'}').join(v[x]);return s}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var phone=function(){return window.innerWidth<=760};
@@ -407,7 +424,7 @@ function renderPanel(){
       '<div class="tools"><button class="btn" id="copyBtn">'+esc(t('copy'))+'</button><button class="ghostlink" id="resetBtn">'+esc(t('reset'))+'</button></div><textarea class="copybox" id="copyBox" readonly hidden></textarea><div class="ctaLine"><button class="alink" data-cta="1">'+esc(t('ctaLine'))+'</button></div>';
   }else{
     h='<p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
-      '<div class="row" style="margin-top:14px"><a class="btn" href="'+esc(C.links.contact)+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
+      '<div class="row" style="margin-top:14px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
       '<p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p>';
   }
   P.innerHTML=h;P.scrollTop=0;
@@ -702,7 +719,7 @@ document.addEventListener('keydown',function(e){
 /* ---------- окно «для вашего проекта» ---------- */
 var ctaOn=false;
 function openCta(){var m=$('cta');m.innerHTML='<div class="cbox" role="dialog" aria-modal="true"><button class="cx" id="ctaX" aria-label="'+esc(t('close'))+'">×</button><p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
-  '<div class="row" style="margin-top:18px"><a class="btn" href="'+esc(C.links.contact)+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div><p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p></div>';
+  '<div class="row" style="margin-top:18px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div><p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p></div>';
   m.hidden=false;ctaOn=true;requestAnimationFrame(function(){m.classList.add('on')});$('ctaX').onclick=closeCta}
 function closeCta(){var m=$('cta');m.classList.remove('on');ctaOn=false;setTimeout(function(){if(!ctaOn)m.hidden=true},260)}
 $('cta').addEventListener('click',function(e){if(e.target===$('cta'))closeCta()});
