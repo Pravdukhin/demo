@@ -336,7 +336,7 @@ var OV={ru:{mark:"Гости вымышлены · площадка измене
  ctaLine:"Хотите так же для своего мероприятия? →",saveBtn:"Сохранить рассадку",savedBtn:"Сохранено",saveDone:"Рассадка сохранена на этом устройстве",howto:"Этапы работы и стоимость →",
  eLabel:"Для вашего мероприятия",eTitle:"Интерактивная модель зала с рассадкой",
  eText:"Она собирается на этапе инженерной разработки мероприятия, вместе с декораторами. Что входит в разработку и сколько она стоит, смотрите в разделе «Этапы работы и стоимость».",
- eText2:"Нажмите «Обсудить проект»: пришлю 8 вопросов о мероприятии, с них и начнём."},
+ eText2:"Нажмите «Обсудить проект»: пришлю 8 вопросов о мероприятии. Через два рабочих дня я подготовлю ориентировочный технический бюджет по всем блокам: звук, свет, видео, экраны, сцена и конструкции."},
 en:{mark:"Guests are fictional · venue altered",hLabel:"Sample project",title:"Walk through the hall before the event",
  p1:"The client opens the link on a phone or a computer, walks through the hall and sees how it will look.",
  p2:"The hall is built from a scan of the venue, with the decor and the rest of the setup already in place. On the plan you can seat the guests and see the view from their seats.",
@@ -344,7 +344,7 @@ en:{mark:"Guests are fictional · venue altered",hLabel:"Sample project",title:"
  ctaLine:"Want the same for your event? →",saveBtn:"Save seating",savedBtn:"Saved",saveDone:"Seating saved on this device",howto:"Work stages and pricing →",
  eLabel:"For your event",eTitle:"Interactive hall model with seating",
  eText:"It is built during the engineering design of the event, together with the decorators. What the design includes and what it costs is in “Work stages and pricing”.",
- eText2:"Press “Discuss a project”: I will send 8 questions about the event, and we start from there."}};
+ eText2:"Press “Discuss a project”: I will send 8 questions about the event. In two working days I will prepare an indicative technical budget across all departments: sound, lighting, video, screens, staging and structures."}};
 function t(k,v){var L=lang(),s=(OV[L][k]!=null)?OV[L][k]:(C.text&&C.text[L]&&C.text[L][k]!=null)?C.text[L][k]:(UI[L][k]!=null?UI[L][k]:k);if(v)for(var x in v)s=String(s).split('{'+x+'}').join(v[x]);return s}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -696,8 +696,8 @@ window.addEventListener('wheel',function(e){clearTimeout(wIdle);wIdle=setTimeout
   if(edit||ctaOn)return;if(tv){e.preventDefault();var pk0=packs[passIdx];if(!pk0||!pk0.ready)return;if(anim){cancelAnimationFrame(anim);anim=null}wheelScrub(-e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1)*2.2);return}var p=e.target.closest&&e.target.closest('.pin');
   if(p&&p.scrollHeight>p.clientHeight+2){var atTop=p.scrollTop<=0,atBot=p.scrollTop+p.clientHeight>=p.scrollHeight-2;if((e.deltaY<0&&!atTop)||(e.deltaY>0&&!atBot)){wHold=Date.now();return}}
   e.preventDefault();if(step===0&&hasMorph()&&packs[passIdx]&&packs[passIdx].ready){stopRide();if(!anim)wheelScrub(e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1));wLock=Date.now()+500;return}
-  var now=Date.now();if(now<wLock)return;if(step===1){if(now-wHold<700){wHold=now;wAcc=0;return}if(now-wLast>260)wAcc=0;wLast=now}wAcc+=e.deltaY;
-  if(Math.abs(wAcc)>(step===1?260:40)){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
+  var now=Date.now();if(now<wLock)return;if(step===1){if(now-wHold<400){wHold=now;wAcc=0;return}if(now-wLast>350)wAcc=0;wLast=now}wAcc+=e.deltaY;
+  if(Math.abs(wAcc)>(step===1?70:40)){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
 },{passive:false});
 document.addEventListener('keydown',function(e){
   if(ctaOn){if(e.key==='Escape')closeCta();return}if(tv){if(e.key==='Escape'||e.key==='ArrowUp'||e.key==='PageUp')closeTV();return}
