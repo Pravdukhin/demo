@@ -767,7 +767,12 @@ window.addEventListener('hashchange',onHash);
 function applyText(){document.querySelectorAll('[data-i]').forEach(function(e){e.textContent=t(e.getAttribute('data-i'))});document.title=t('title');$('lng').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});renderTicks();renderPanel();renderLights();renderPlan();buildRail();requestAnimationFrame(layout)}
 $('planImg').src=planSrc();$('endImg').src=C.end||C.hero;
 $('planImg').addEventListener('load',layout);
-if(!window.SITE_NAV){$('lng').hidden=false;document.documentElement.lang=C.lang||'ru';$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(b)document.documentElement.lang=b.dataset.l})}
+if(!window.SITE_NAV){$('lng').hidden=false;document.documentElement.lang=(function(){var q=null;try{q=new URLSearchParams(location.search).get('lang')}catch(e){}if(q==='ru'||q==='en')return q;
+  try{var v=localStorage.getItem('lang');if(v==='ru'||v==='en')return v}catch(e){}
+  var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  if(/^(Europe\/(Kyiv|Kiev|Uzhgorod|Zaporozhye)|Asia\/Tbilisi)$/.test(tz))return 'en';
+  if(/^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Minsk|Chisinau|Tiraspol)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr|Almaty|Qostanay|Aqtobe|Aqtau|Atyrau|Oral|Qyzylorda|Bishkek|Tashkent|Samarkand|Dushanbe|Ashgabat|Yerevan|Baku))$/.test(tz))return 'ru';
+  return /^ru\b/i.test(navigator.language||'')?'ru':'en'})();$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(b){document.documentElement.lang=b.dataset.l;try{localStorage.setItem('lang',b.dataset.l)}catch(x){}}})}
 new MutationObserver(applyText).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 loadState();
 curTable=(C.startTable!=null?C.startTable:tables[Math.min(8,tables.length-1)].n);
