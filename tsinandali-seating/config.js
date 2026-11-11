@@ -58,7 +58,7 @@ window.DEMO_CONFIG = {
    "thumb": "media/views/v11_s.webp"
   }
  ],
- "lights": [{"id": "warm", "ru": "Тёплый", "en": "Warm"}, {"id": "blue", "ru": "Синий", "en": "Blue"}],
+ "lights": [{"id": "warm", "ru": "Тёплый", "en": "Warm"}, {"id": "blue", "ru": "Холодный", "en": "Cool"}],
  "passes": [
   {"id": "R4", "n": 1033, "ns": 517, "big": {"tpl": "media/pass/R4/{i}.webp", "cols": 2, "rows": 2, "w": 1920, "h": 1080}, "small": {"tpl": "media/pass/R4/s/{i}.webp", "cols": 3, "rows": 3, "w": 854, "h": 480}, "poster": "media/pass_R4_poster.webp", "toPlan": [[0.0002949083820851585, 2.575933002859157e-07, 0.28989546922350024], [-8.47979011129842e-08, 0.0005149479589325133, -0.01699256878530696], [-2.2543836544682482e-07, 3.649900024801917e-07, 1.0]], "stations": [{"f": 0, "ru": "Над зданием", "en": "Above"}, {"f": 192, "ru": "Под крышей", "en": "Under the roof"}, {"f": 384, "ru": "В зале", "en": "In the hall"}, {"f": 624, "ru": "У сцены", "en": "By the stage"}, {"f": 744, "ru": "Сцена", "en": "Stage"}, {"f": 1032, "ru": "", "en": ""}], "pf": 0.93, "screens": 2.6, "fps": 24},
   {"id": "T1", "table": 1, "n": 193, "ns": 97, "big": {"tpl": "media/tv/T1b_{i}.webp", "cols": 2, "rows": 2, "w": 1920, "h": 1080}, "small": {"tpl": "media/tv/s/T1b_{i}.webp", "cols": 3, "rows": 3, "w": 854, "h": 480}, "poster": "media/pass_R4_poster.webp", "toPlan": [[0.0002949083820851585, 2.575933002859157e-07, 0.28989546922350024], [-8.47979011129842e-08, 0.0005149479589325133, -0.01699256878530696], [-2.2543836544682482e-07, 3.649900024801917e-07, 1.0]], "pf": 0.8, "fps": 24},
