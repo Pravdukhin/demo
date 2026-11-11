@@ -212,7 +212,10 @@ g.on .eyebg{fill:#fff}
 .cbox{position:relative;max-width:520px;width:100%;background:var(--night2);border:1px solid var(--line);border-radius:18px;padding:30px 28px 24px;max-height:90dvh;overflow:auto}
 .cbox h2{font-weight:300;font-size:clamp(26px,3vw,36px);letter-spacing:-.02em;line-height:1.1;margin:0 0 14px}
 .cx{position:absolute;right:10px;top:8px;appearance:none;background:none;border:0;color:var(--ink-soft);font-size:28px;line-height:1;padding:8px 12px;cursor:pointer}
-.swipe{display:none}
+.swipe,.swh{display:none}
+.ticks{display:flex;flex-direction:column;align-items:flex-end}
+.ticks li{position:relative}
+.ticks li.cta button{white-space:nowrap}
 @media (max-width:760px){
   #bg{display:block;position:absolute;left:-12%;top:-12%;width:124%;height:124%;filter:blur(26px) brightness(.55) saturate(1.15)}
   .stage{background:var(--night-deep);touch-action:none}
@@ -231,10 +234,16 @@ g.on .eyebg{fill:#fff}
   .st.cur.last span{left:auto;right:8px;transform:none}
   .hint{display:none}
   .pin{position:relative}
-  .swipe{display:flex;align-items:center;gap:8px;position:absolute;right:var(--pad-r);top:12px;color:var(--ink-soft);font-size:12px}
-  .swipe i{position:relative;width:18px;height:28px;border:1.5px solid var(--ink-soft);border-radius:12px;flex:none}
-  .swipe i::after{content:"";position:absolute;left:50%;bottom:6px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:var(--amber);animation:sw 1.6s ease-in-out infinite}
-  @keyframes sw{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(-14px);opacity:0}100%{opacity:0}}
+  .swh{display:flex;position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(var(--sheet) - 34px);align-items:center;gap:9px;padding:5px 14px 5px 9px;border-radius:999px;background:rgba(8,20,36,.72);border:1px solid var(--line);color:var(--ink-soft);font-size:12px;white-space:nowrap;pointer-events:none;transition:bottom .35s ease,opacity .3s}
+  .swh.pl{bottom:calc(var(--sheet) + 10px)}
+  .swh i{position:relative;width:14px;height:22px;border:1.5px solid var(--ink-soft);border-radius:9px;flex:none}
+  .swh i::after{content:"";position:absolute;left:50%;bottom:4px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--amber);animation:sw 1.6s ease-in-out infinite}
+  .swh.dn i::after{bottom:auto;top:4px;animation-name:swd}
+  @keyframes sw{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(-9px);opacity:0}100%{opacity:0}}
+  @keyframes swd{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(9px);opacity:0}100%{opacity:0}}
+  body.s0 .pin{padding-top:44px}
+  .ticks{display:none}
+  body.editing .swh{display:none}
   .lights{top:calc(var(--top) + env(safe-area-inset-top,0px) + 32px)}
   .meta{font-size:11px}
   .tvbtn{font-size:14px;padding:9px 14px 9px 11px}
@@ -262,6 +271,7 @@ g.on .eyebg{fill:#fff}
 <div class="panel"><div class="pin" id="pin" aria-live="polite"></div></div>
 <div class="mstep"><button id="mUp" aria-label="">↑</button><button id="mDn" aria-label="">↓</button></div>
 <div class="ghost" id="ghost" hidden></div>
+<div class="swh" id="swh"><i></i><span></span></div>
 <div class="toast" id="toast"></div>
 <div class="cta" id="cta" hidden></div>
 
@@ -273,7 +283,7 @@ var C=window.DEMO_CONFIG; if(!C){document.body.insertAdjacentHTML('afterbegin','
 var STORE='demo-seating-'+C.id;
 /* ---------- тексты интерфейса ---------- */
 var UI={
- ru:{mark:"демо · объект изменён",steps:["3D-модель","Схема"],cta:"Для вашего проекта",ctaLine:"Такой зал для вашего мероприятия →",viewsNote:"Столы со значком глаза открываются в 3D: вид на сцену с этого места.",swipe:"Листайте вверх",close:"Закрыть",tvHint:"Прокрутка назад возвращает к схеме.",up:"Предыдущий шаг",dn:"Следующий шаг",
+ ru:{mark:"демо · объект изменён",steps:["3D-модель","Схема"],cta:"Для вашего проекта",ctaLine:"Такой зал для вашего мероприятия →",viewsNote:"Столы со значком глаза открываются в 3D: вид на сцену с этого места.",swipe:"Листайте вверх",swPlan:"Листайте схему вниз: назад в 3D",swTv:"Листайте вниз: назад к схеме",close:"Закрыть",tvHint:"Прокрутка назад возвращает к схеме.",up:"Предыдущий шаг",dn:"Следующий шаг",
   hLabel:"Демо",p1:"Столы уже стоят в проекте у техников и декораторов, а гости пересаживаются до последнего дня.",
   p2:"Здесь мероприятие открывается по ссылке. Зал построен по скану площадки и остаётся неизменным: двигаются только гости.",
   tables:"столов",seats:"мест",sHint:"← ведите по кадру →",go2:"К схеме рассадки ↓",
@@ -287,7 +297,7 @@ var UI={
   moved:"{name} → стол {n}",unseated:"{name} без места",full:"Стол {n} занят полностью",
   eLabel:"Когда это делается",eTitle:"Такой зал для вашего мероприятия",eText:"Модель зала и рассадка собираются на этапе разработки технического проекта, вместе с декораторами. Ссылку получают заказчик, агентство и подрядчики, все видят одно и то же.",
   eText2:"Приглашайте на осмотр площадки и в проект.",cBtn:"Обсудить проект",wLink:"Этапы работы и стоимость ↗",foot:"Гости и имена вымышлены. Площадка изменена.",listNone:"Без места"},
- en:{mark:"demo · venue altered",steps:["3D model","Plan"],cta:"For your project",ctaLine:"This hall for your event →",viewsNote:"Tables with the eye mark open in 3D: the view of the stage from that seat.",swipe:"Swipe up",close:"Close",tvHint:"Scroll back to return to the plan.",up:"Previous step",dn:"Next step",
+ en:{mark:"demo · venue altered",steps:["3D model","Plan"],cta:"For your project",ctaLine:"This hall for your event →",viewsNote:"Tables with the eye mark open in 3D: the view of the stage from that seat.",swipe:"Swipe up",swPlan:"Swipe the plan down: back to 3D",swTv:"Swipe down: back to the plan",close:"Close",tvHint:"Scroll back to return to the plan.",up:"Previous step",dn:"Next step",
   hLabel:"Demo",p1:"Tables are already placed in the technical and decor drawings, yet guests keep changing seats until the last day.",
   p2:"Here the event opens from a link. The hall is built from a scan of the venue and stays the same: only the guests move.",
   tables:"tables",seats:"seats",sHint:"← drag across the frame →",go2:"To the seating plan ↓",
@@ -333,11 +343,13 @@ var anim=null;
 function PFv(){return C.passes[passIdx].pf||.8}
 function stops(){var p=C.passes[passIdx],a=(p.stations||[{f:0},{f:p.n-1}]).map(function(o){return o.f/(p.n-1)*PFv()});a.push(1);return a}
 function hasMorph(){return !!C.passes[passIdx].toPlan}
-function animPos(to,ms,done){wStop();cancelAnimationFrame(anim);var from=pos,t0=performance.now();(function tick(now){var k=Math.min(1,(now-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;pos=from+(to-from)*e;if(k<1){draw();anim=requestAnimationFrame(tick)}else{anim=null;draw();if(done)done()}})(t0)}
+var riding=false;function animPos(to,ms,done,lin){riding=false;wStop();cancelAnimationFrame(anim);var from=pos,t0=performance.now(),A=.05,V=1/(1-A);(function tick(now){var k=Math.min(1,(now-t0)/ms),e=lin?(k<A?V*k*k/(2*A):k>1-A?1-V*(1-k)*(1-k)/(2*A):V*(k-A/2)):(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);pos=from+(to-from)*e;if(k<1){draw();anim=requestAnimationFrame(tick)}else{anim=null;draw();if(done)done()}})(t0)}
 function legMs(a,b){var p=C.passes[passIdx],pf=PFv(),fr=Math.abs(Math.min(b,pf)-Math.min(a,pf))/pf*(p.n-1);return Math.max(700,fr/(p.fps||24)*1000*.6+(Math.max(a,b)>pf?900:0))}
+function ride(){if(step!==0||tv||edit||!hasMorph()){go(1);return}var pk=packs[passIdx];if(!pk||!pk.ready||pos>=1)return;$('Lpass').classList.add('used');animPos(1,legMs(pos,1),function(){riding=false;if(pos>=1)setStep(1)},true);riding=true}
+function stopRide(){if(anim&&riding){cancelAnimationFrame(anim);anim=null;riding=false;return true}return false}
 function back0(){if(step!==0||anim||!hasMorph()||pos<=0)return false;var sp=stops(),tg=0;for(var q=sp.length-1;q>=0;q--)if(sp[q]<pos-.004){tg=sp[q];break}animPos(tg,legMs(pos,tg));return true}
 function go(i,quiet){
-  if(tv)return;
+  if(tv)return;stopRide();
   if(i<0&&back0())return;
   i=Math.max(0,Math.min(NSTEP-1,i));if(i===step&&!quiet)return;
   if(anim)return;
@@ -356,11 +368,11 @@ function setStep(i){step=i;if(step!==0)clearMorph();
 function renderTicks(){
   var T=$('ticks');T.setAttribute('aria-label',lang()==='ru'?'Шаги':'Steps');
   var S=tv?0:step;T.innerHTML=t('steps').map(function(s,i){return '<li class="'+(i===S?'on':'')+'"><button data-s="'+i+'">'+esc(s)+'</button></li>'}).join('')+'<li class="cta"><button data-cta="1">'+esc(t('cta'))+'</button></li>';
-  $('cnt').textContent='';document.body.classList.toggle('s0',step===0);
+  $('cnt').textContent='';var sh=$('swh');sh.className='swh '+(tv?'tvm dn':(step===1?'pl dn':'up'));sh.querySelector('span').textContent=t(tv?'swTv':(step===1?'swPlan':'swipe'));document.body.classList.toggle('s0',step===0);
   
   $('mUp').setAttribute('aria-label',t('up'));$('mDn').setAttribute('aria-label',t('dn'));
 }
-$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.cta){openCta();return}if(tv){if(+b.dataset.s===1)closeTV();return}go(+b.dataset.s)});
+$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.cta){openCta();return}if(tv){if(+b.dataset.s===1)closeTV();return}if(+b.dataset.s===1&&step===0)ride();else go(+b.dataset.s)});
 $('mUp').onclick=function(){go(step-1)};$('mDn').onclick=function(){go(step+1)};
 
 /* ---------- панель шага ---------- */
@@ -373,7 +385,7 @@ function renderPanel(){
     h='<p class="label">'+esc(t('hLabel'))+'</p><h1>'+esc(t('title'))+'</h1><p class="lead">'+esc(t('p1'))+'</p><p class="lead">'+esc(t('p2'))+'</p>'+
       (false?'<div class="tabs" role="group">'+C.passes.map(function(p,i){return '<button data-pass="'+i+'" aria-pressed="'+(i===passIdx)+'">'+esc(t('pass'+p.id))+'</button>'}).join('')+'</div>':'')+
       '<div class="facts"><div><b>'+tables.length+'</b><span>'+esc(t('tables'))+'</span></div><div><b>'+tables.reduce(function(a,x){return a+x.pos.length},0)+'</b><span>'+esc(t('seats'))+'</span></div></div>'+
-      '<div class="next"><button class="alink" data-go="1">'+esc(t('go2'))+'</button></div><div class="swipe"><i></i><span>'+esc(t('swipe'))+'</span></div>';
+      '<div class="next"><button class="alink" data-go="1">'+esc(t('go2'))+'</button></div>';
   }else if(step===1){
     var a=seatedCount();
     h='<p class="label">'+esc(t('rLabel'))+'</p><h2>'+esc(t('rTitle'))+'</h2>'+
@@ -390,7 +402,7 @@ function renderPanel(){
   if($('tvBack'))$('tvBack').onclick=closeTV;
 }
 $('pin').addEventListener('click',function(e){
-  var g=e.target.closest('[data-go]');if(g){go(+g.dataset.go);return}
+  var g=e.target.closest('[data-go]');if(g){if(+g.dataset.go===1&&step===0)ride();else go(+g.dataset.go);return}
   if(e.target.closest('[data-cta]')){openCta();return}
   var p=e.target.closest('[data-pass]');if(p){setPass(+p.dataset.pass);return}
   var v=e.target.closest('[data-tv]');if(v){openTV(+v.dataset.tv);return}
@@ -637,7 +649,7 @@ function morph(m){
   svg.style.opacity=Math.max(0,(m-.45)/.55);cv.style.opacity=1-Math.max(0,Math.min(1,(m-.25)/.5));$('rail').style.opacity=Math.max(0,1-m*2.4);$('rail').style.pointerEvents=m>.3?'none':'';
 }
 (function(){var S=$('Lpass'),st=null;
-  S.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;if(anim){if(!tv)return;cancelAnimationFrame(anim);anim=null}wStop();st={x:e.clientX,y:e.clientY,p:pos,h:null,id:e.pointerId}});
+  S.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;if(anim){if(!tv&&!riding)return;cancelAnimationFrame(anim);anim=null;riding=false}wStop();st={x:e.clientX,y:e.clientY,p:pos,h:null,id:e.pointerId}});
   S.addEventListener('pointermove',function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;
     if(st.h===null){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;st.h=Math.abs(dx)>=Math.abs(dy);st.ly=e.clientY;try{S.setPointerCapture(st.id)}catch(_){}}
     if(!st.h)return;
@@ -650,7 +662,7 @@ var wAcc=0,wLock=0;
 window.addEventListener('wheel',function(e){clearTimeout(wIdle);wIdle=setTimeout(settle,320);
   if(edit||ctaOn)return;if(tv){e.preventDefault();var pk0=packs[passIdx];if(!pk0||!pk0.ready)return;if(anim){cancelAnimationFrame(anim);anim=null}wheelScrub(-e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1)*2.2);return}var p=e.target.closest&&e.target.closest('.pin');
   if(p&&p.scrollHeight>p.clientHeight+2){var atTop=p.scrollTop<=0,atBot=p.scrollTop+p.clientHeight>=p.scrollHeight-2;if((e.deltaY<0&&!atTop)||(e.deltaY>0&&!atBot))return}
-  e.preventDefault();if(step===0&&hasMorph()&&packs[passIdx]&&packs[passIdx].ready){if(!anim)wheelScrub(e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1));wLock=Date.now()+500;return}
+  e.preventDefault();if(step===0&&hasMorph()&&packs[passIdx]&&packs[passIdx].ready){stopRide();if(!anim)wheelScrub(e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1));wLock=Date.now()+500;return}
   var now=Date.now();if(now<wLock)return;wAcc+=e.deltaY;
   if(Math.abs(wAcc)>40){go(step+(wAcc>0?1:-1));wAcc=0;wLock=now+750}
 },{passive:false});
@@ -669,7 +681,7 @@ document.addEventListener('keydown',function(e){
     if(ts.m===null){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;ts.m=Math.abs(dy)>=Math.abs(dx)?'v':'h';ts.lx=c.clientX;ts.ly=c.clientY}
     if(step===1){if(ts.pin||ts.m!=='v'||dy<28)return;e.preventDefault();if(anim)return;pos=1;setStep(0);$('Lpass').classList.add('used');ts.ly=c.clientY;return}
     if(step!==0||!hasMorph())return;e.preventDefault();var pk=packs[passIdx];if(!pk||!pk.ready)return;
-    if(anim){if(!tv)return;cancelAnimationFrame(anim);anim=null}
+    if(anim){if(!tv&&!riding)return;cancelAnimationFrame(anim);anim=null;riding=false}
     var d=ts.m==='v'?(ts.ly-c.clientY):(c.clientX-ts.lx);ts.lx=c.clientX;ts.ly=c.clientY;if(d)wheelScrub((tv?-1:1)*d*4)},{passive:false});
   function end(){var m=ts&&ts.m;ts=null;if(m)setTimeout(settle,120)}document.addEventListener('touchend',end,{passive:true});document.addEventListener('touchcancel',end,{passive:true});
 })();
