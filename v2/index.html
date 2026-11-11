@@ -217,7 +217,10 @@ g.on .eyebg{fill:#fff}
 .logo:hover{border-color:var(--amber);color:var(--ink)}
 .tbt{display:flex;flex-direction:column;align-items:flex-start;gap:1px;font-size:12px;color:var(--dim);text-shadow:0 1px 10px rgba(8,20,36,.9)}
 .tbt .alink{font-size:12px;text-shadow:0 1px 10px rgba(8,20,36,.9)}
-.lights{top:calc(12px + env(safe-area-inset-top,0px));right:calc(var(--pad-r) + 92px)}
+.lights{top:calc(46px + env(safe-area-inset-top,0px));right:var(--pad-r)}
+.decor{top:calc(82px + env(safe-area-inset-top,0px))}
+.lights .soon{border-style:dashed;color:var(--dim);cursor:default}
+.lights .soon sup{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-left:5px;vertical-align:top;position:relative;top:1px}
 .backrow{margin:0 0 16px}
 @media (max-width:760px){
   #bg{display:block;position:absolute;left:-12%;top:-12%;width:124%;height:124%;filter:blur(26px) brightness(.55) saturate(1.15)}
@@ -247,10 +250,12 @@ g.on .eyebg{fill:#fff}
   body.s0 .pin{padding-top:62px}
   .ticks{display:none}
   body.editing .swh{display:none}
-  .lights{top:calc(52px + env(safe-area-inset-top,0px));right:var(--pad-r)}
+  .lights{top:calc(46px + env(safe-area-inset-top,0px));right:var(--pad-r);gap:5px}
+  .decor{top:calc(76px + env(safe-area-inset-top,0px))}
+  .lights button{padding:4px 9px;font-size:11px}
   .backrow{display:none}
   .logo{padding:7px 10px;font-size:10px}
-  .tb{gap:10px}
+  .tb{flex-direction:column;align-items:flex-start;gap:7px;top:calc(12px + env(safe-area-inset-top,0px))}
   .tbt{font-size:11px}.tbt .alink{font-size:11px}
   .meta{font-size:11px}
   .tvbtn{font-size:14px;padding:9px 14px 9px 11px}
@@ -274,6 +279,7 @@ g.on .eyebg{fill:#fff}
 <div class="lng" id="lng" hidden><button data-l="ru" aria-pressed="true">RU</button><button data-l="en" aria-pressed="false">EN</button></div>
 <div class="tb" id="tb"><button class="logo" data-cta="1"><span data-i="logo"></span></button><div class="tbt"><span data-i="mark"></span><button class="alink" data-cta="1" data-i="howto"></button></div></div><span id="cnt" hidden></span>
 <div class="lights" id="lights" hidden></div>
+<div class="lights decor" id="decor" hidden></div>
 <ol class="ticks" id="ticks" aria-label=""></ol>
 <div class="panel"><div class="pin" id="pin" aria-live="polite"></div></div>
 <div class="mstep"><button id="mUp" aria-label="">↑</button><button id="mDn" aria-label="">↓</button></div>
@@ -290,7 +296,7 @@ var C=window.DEMO_CONFIG; if(!C){document.body.insertAdjacentHTML('afterbegin','
 var STORE='demo-seating-'+C.id;
 /* ---------- тексты интерфейса ---------- */
 var UI={
- ru:{mark:"Демо · площадка изменена",steps:["3D-модель","Схема"],cta:"Для вашего проекта",ctaLine:"Такой зал для вашего мероприятия →",viewsNote:"Столы со значком глаза открываются в 3D: вид на сцену с этого места.",swipe:"Листайте вверх",swPlan:"Назад в 3D",swTv:"Назад к схеме",logo:"Ваш логотип",howto:"Как сделать такой зал →",back3d:"↑ В 3D-модель",close:"Закрыть",tvHint:"Прокрутка назад возвращает к схеме.",up:"Предыдущий шаг",dn:"Следующий шаг",
+ ru:{mark:"Демо · площадка изменена",steps:["3D-модель","Схема"],cta:"Для вашего проекта",ctaLine:"Такой зал для вашего мероприятия →",viewsNote:"Столы со значком глаза открываются в 3D: вид на сцену с этого места.",swipe:"Листайте вверх",swPlan:"Назад в 3D",swTv:"Назад к схеме",logo:"Ваш логотип",decor:"Декор",soon:"скоро",soonMsg:"Второй вариант декора в разработке",howto:"Как сделать такой зал →",back3d:"↑ В 3D-модель",close:"Закрыть",tvHint:"Прокрутка назад возвращает к схеме.",up:"Предыдущий шаг",dn:"Следующий шаг",
   hLabel:"Демо",p1:"Столы уже стоят в проекте у техников и декораторов, а гости пересаживаются до последнего дня.",
   p2:"Здесь мероприятие открывается по ссылке. Зал построен по скану площадки и остаётся неизменным: двигаются только гости.",
   tables:"столов",seats:"мест",sHint:"← ведите по кадру →",go2:"К схеме рассадки ↓",
@@ -304,7 +310,7 @@ var UI={
   moved:"{name} → стол {n}",unseated:"{name} без места",full:"Стол {n} занят полностью",
   eLabel:"Когда это делается",eTitle:"Такой зал для вашего мероприятия",eText:"Модель зала и рассадка собираются на этапе разработки технического проекта, вместе с декораторами. Ссылку получают заказчик, агентство и подрядчики, все видят одно и то же.",
   eText2:"Приглашайте на осмотр площадки и в проект.",cBtn:"Обсудить проект",wLink:"Этапы работы и стоимость ↗",foot:"Гости и имена вымышлены. Площадка изменена.",listNone:"Без места"},
- en:{mark:"Demo · venue altered",steps:["3D model","Plan"],cta:"For your project",ctaLine:"This hall for your event →",viewsNote:"Tables with the eye mark open in 3D: the view of the stage from that seat.",swipe:"Swipe up",swPlan:"Back to 3D",swTv:"Back to the plan",logo:"Your logo",howto:"How to get one for your event →",back3d:"↑ To the 3D model",close:"Close",tvHint:"Scroll back to return to the plan.",up:"Previous step",dn:"Next step",
+ en:{mark:"Demo · venue altered",steps:["3D model","Plan"],cta:"For your project",ctaLine:"This hall for your event →",viewsNote:"Tables with the eye mark open in 3D: the view of the stage from that seat.",swipe:"Swipe up",swPlan:"Back to 3D",swTv:"Back to the plan",logo:"Your logo",decor:"Decor",soon:"soon",soonMsg:"A second decor option is in the works",howto:"How to get one for your event →",back3d:"↑ To the 3D model",close:"Close",tvHint:"Scroll back to return to the plan.",up:"Previous step",dn:"Next step",
   hLabel:"Demo",p1:"Tables are already placed in the technical and decor drawings, yet guests keep changing seats until the last day.",
   p2:"Here the event opens from a link. The hall is built from a scan of the venue and stays the same: only the guests move.",
   tables:"tables",seats:"seats",sHint:"← drag across the frame →",go2:"To the seating plan ↓",
@@ -469,7 +475,7 @@ function tableAt(cx,cy){var p=planXY(cx,cy),best=null,bd=1e9,minR=24/p[2];tables
 /* ---------- раскладка сцены ---------- */
 function sheetH(){if(tv&&tv.sh)return tv.sh;return phone()?Math.round($('pin').getBoundingClientRect().height):0}
 function layout(){
-  var vw=window.innerWidth,vh=window.innerHeight,sh=sheetH(),top=56+8,r;
+  var vw=window.innerWidth,vh=window.innerHeight,sh=sheetH(),top=phone()?108:64,r;
   document.documentElement.style.setProperty('--sheet',sh+'px');
   if(phone())r={x:8,y:top+10,w:vw-16,h:Math.max(120,vh-sh-top-20)};
   else{var left=$('pin').getBoundingClientRect().right+28,right=$('ticks').getBoundingClientRect().left-28;r={x:left,y:top+12,w:Math.max(200,right-left),h:vh-top-36}}
@@ -573,7 +579,7 @@ function routePass(l){for(var i=0;i<C.passes.length;i++)if(C.passes[i].table==nu
 function tvPass(n){var f=-1;for(var i=0;i<C.passes.length;i++)if(C.passes[i].table===n){if(pl(i)===light)return i;if(f<0)f=i}return f}
 function planSrc(){return (C.plan.byLight&&C.plan.byLight[light])||C.plan.src}
 function renderLights(){var L=$('lights');if(!C.lights||C.lights.length<2){L.hidden=true;return}L.hidden=false;
-  L.innerHTML=C.lights.map(function(o){return '<button data-light="'+o.id+'" aria-pressed="'+(o.id===light)+'">'+esc(o[lang()]||o.ru)+'</button>'}).join('')}
+  L.innerHTML=C.lights.map(function(o){return '<button data-light="'+o.id+'" aria-pressed="'+(o.id===light)+'">'+esc(o[lang()]||o.ru)+'</button>'}).join('');var Dc=$('decor');Dc.hidden=false;Dc.innerHTML='<button aria-pressed="true">'+esc(t('decor'))+' 1</button><button class="soon" data-soon="1">'+esc(t('decor'))+' 2<sup>'+esc(t('soon'))+'</sup></button>'}
 function fadeOver(){var o=document.createElement('canvas');o.width=cv.width;o.height=cv.height;try{o.getContext('2d').drawImage(cv,0,0)}catch(e){}o.style.cssText=cv.style.cssText+';position:absolute;display:block;transition:opacity .55s;pointer-events:none';cv.parentNode.insertBefore(o,cv.nextSibling);
   return function(){requestAnimationFrame(function(){requestAnimationFrame(function(){o.style.opacity=0;setTimeout(function(){o.remove()},650)})})}}
 function swapLight(l,k){var done=fadeOver();light=l;passIdx=routePass(l);loadPack(passIdx);buildRail();var sp=stops();pos=sp[Math.min(k,sp.length-1)];$('planImg').src=planSrc();renderLights();
@@ -701,6 +707,7 @@ function openCta(){var m=$('cta');m.innerHTML='<div class="cbox" role="dialog" a
 function closeCta(){var m=$('cta');m.classList.remove('on');ctaOn=false;setTimeout(function(){if(!ctaOn)m.hidden=true},260)}
 $('cta').addEventListener('click',function(e){if(e.target===$('cta'))closeCta()});
 $('tvBtn').addEventListener('click',function(){openTV(+$('tvBtn').dataset.tv)});
+$('decor').addEventListener('click',function(e){if(e.target.closest('[data-soon]'))toast(t('soonMsg'))});
 $('tb').addEventListener('click',function(e){if(e.target.closest('[data-cta]'))openCta()});
 $('swh').addEventListener('click',function(){if(tv)closeTV();else if(step===1)go(0);else ride()});
 
