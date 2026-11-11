@@ -84,9 +84,18 @@ g.flash .sel{opacity:1;animation:fl 1.2s ease}
 .lights button[aria-pressed="true"]{border-color:var(--amber);color:var(--ink)}
 body.tv .lights{display:none}
 .meta .cnt{font-variant-numeric:tabular-nums;color:var(--ink)}
-.lng{position:fixed;z-index:7;top:calc(10px + env(safe-area-inset-top,0px));right:var(--pad-r);display:flex;gap:2px}
-.lng button{appearance:none;background:none;border:0;padding:6px 8px;color:var(--dim);font-size:14px;cursor:pointer}
-.lng button[aria-pressed="true"]{color:var(--ink)}
+.lng{position:fixed;z-index:46;top:calc(8px + env(safe-area-inset-top,0px));right:var(--pad-r)}
+.lsw{appearance:none;height:32px;min-width:46px;border:0;border-radius:16px;background:rgba(8,20,36,.35);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 11px 0 13px;font:inherit;font-size:13px;letter-spacing:.05em;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.lsw:hover,.lsw[aria-expanded="true"]{background:rgba(8,20,36,.65)}
+.lsw .cv{width:7px;height:7px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:translateY(-2px) rotate(45deg)}
+.lsd{position:absolute;top:40px;right:0;min-width:190px;background:rgba(10,24,42,.97);border:1px solid var(--line);border-radius:14px;padding:6px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.lsd.open{opacity:1;transform:none;pointer-events:auto}
+.lsd button{appearance:none;display:flex;width:100%;align-items:center;gap:12px;border:0;background:none;color:var(--ink);font:inherit;padding:10px 12px;border-radius:9px;cursor:pointer;text-align:left;font-size:15px}
+.lsd button:hover{background:rgba(255,255,255,.05)}
+.lsd .k{width:22px;color:var(--dim);font-size:12px;letter-spacing:.05em}
+.lsd button[aria-pressed="true"],.lsd button[aria-pressed="true"] .k{color:var(--amber)}
+.lsd .ok{margin-left:auto;color:var(--amber);visibility:hidden}
+.lsd button[aria-pressed="true"] .ok{visibility:visible}
 
 /* шкала шагов, как меню-карта сайта */
 .ticks{position:fixed;z-index:6;right:var(--pad-r);top:50%;transform:translateY(-50%);list-style:none;margin:0;padding:0}
@@ -279,7 +288,7 @@ g.on .eyebg{fill:#fff}
 </div>
 <div class="shade" id="shade"></div>
 
-<div class="lng" id="lng" hidden><button data-l="ru" aria-pressed="true">RU</button><button data-l="en" aria-pressed="false">EN</button></div>
+<div class="lng" id="lng" hidden><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
 <div class="tb" id="tb"><button class="logo" data-cta="1"><span data-i="logo"></span></button><div class="tbt"><span data-i="mark"></span><button class="alink" data-cta="1" data-i="howto"></button></div></div><span id="cnt" hidden></span>
 <div class="lights" id="lights" hidden></div>
 <div class="lights decor" id="decor" hidden></div>
@@ -764,7 +773,7 @@ function onHash(){edit=location.hash==='#edit';$('plan').style.touchAction=edit?
 window.addEventListener('hashchange',onHash);
 
 /* ---------- язык и запуск ---------- */
-function applyText(){document.querySelectorAll('[data-i]').forEach(function(e){e.textContent=t(e.getAttribute('data-i'))});document.title=t('title');$('lng').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});renderTicks();renderPanel();renderLights();renderPlan();buildRail();requestAnimationFrame(layout)}
+function applyText(){document.querySelectorAll('[data-i]').forEach(function(e){e.textContent=t(e.getAttribute('data-i'))});document.title=t('title');$('lsd').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});$('lsc').textContent=lang().toUpperCase();renderTicks();renderPanel();renderLights();renderPlan();buildRail();requestAnimationFrame(layout)}
 $('planImg').src=planSrc();$('endImg').src=C.end||C.hero;
 $('planImg').addEventListener('load',layout);
 if(!window.SITE_NAV){$('lng').hidden=false;document.documentElement.lang=(function(){var q=null;try{q=new URLSearchParams(location.search).get('lang')}catch(e){}if(q==='ru'||q==='en')return q;
@@ -772,7 +781,7 @@ if(!window.SITE_NAV){$('lng').hidden=false;document.documentElement.lang=(functi
   var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
   if(/^(Europe\/(Kyiv|Kiev|Uzhgorod|Zaporozhye)|Asia\/Tbilisi)$/.test(tz))return 'en';
   if(/^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Minsk|Chisinau|Tiraspol)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr|Almaty|Qostanay|Aqtobe|Aqtau|Atyrau|Oral|Qyzylorda|Bishkek|Tashkent|Samarkand|Dushanbe|Ashgabat|Yerevan|Baku))$/.test(tz))return 'ru';
-  return /^ru\b/i.test(navigator.language||'')?'ru':'en'})();$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(b){document.documentElement.lang=b.dataset.l;try{localStorage.setItem('lang',b.dataset.l)}catch(x){}}})}
+  return /^ru\b/i.test(navigator.language||'')?'ru':'en'})();function lsOpen(o){$('lsd').classList.toggle('open',o);$('lsw').setAttribute('aria-expanded',o?'true':'false')}$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.id==='lsw'){lsOpen(!$('lsd').classList.contains('open'));return}if(b.dataset.l){document.documentElement.lang=b.dataset.l;try{localStorage.setItem('lang',b.dataset.l)}catch(x){}lsOpen(false)}});document.addEventListener('pointerdown',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)});window.addEventListener('wheel',function(){lsOpen(false)},{passive:true});document.addEventListener('touchmove',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)},{passive:true})}
 new MutationObserver(applyText).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 loadState();
 curTable=(C.startTable!=null?C.startTable:tables[Math.min(8,tables.length-1)].n);
