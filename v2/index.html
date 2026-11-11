@@ -203,9 +203,9 @@ g.on .eyebg{fill:#fff}
 .L-plan.morph .tvbtn{display:none}
 @keyframes tvin{from{opacity:0;transform:translateY(6px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes tvpulse{0%,100%{box-shadow:0 6px 24px rgba(0,0,0,.45),0 0 0 0 rgba(242,166,72,.55)}55%{box-shadow:0 6px 24px rgba(0,0,0,.45),0 0 0 12px rgba(242,166,72,0)}}
-.ticks li.cta{margin-top:14px}
-.ticks li.cta button{color:var(--amber);font-size:14px}
-.ticks li.cta button::after{background:var(--amber)}
+.ticks li.ctal{position:absolute;top:100%;right:0;margin-top:22px}
+.ticks li.ctal button{color:var(--amber);font-size:14px;white-space:nowrap;padding:6px 0}
+.ticks li.ctal button::after{content:none}
 .ctaLine{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
 .cta{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,16,29,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .25s}
 .cta.on{opacity:1}
@@ -213,9 +213,6 @@ g.on .eyebg{fill:#fff}
 .cbox h2{font-weight:300;font-size:clamp(26px,3vw,36px);letter-spacing:-.02em;line-height:1.1;margin:0 0 14px}
 .cx{position:absolute;right:10px;top:8px;appearance:none;background:none;border:0;color:var(--ink-soft);font-size:28px;line-height:1;padding:8px 12px;cursor:pointer}
 .swipe,.swh{display:none}
-.ticks{display:flex;flex-direction:column;align-items:flex-end}
-.ticks li{position:relative}
-.ticks li.cta button{white-space:nowrap}
 @media (max-width:760px){
   #bg{display:block;position:absolute;left:-12%;top:-12%;width:124%;height:124%;filter:blur(26px) brightness(.55) saturate(1.15)}
   .stage{background:var(--night-deep);touch-action:none}
@@ -234,14 +231,14 @@ g.on .eyebg{fill:#fff}
   .st.cur.last span{left:auto;right:8px;transform:none}
   .hint{display:none}
   .pin{position:relative}
-  .swh{display:flex;position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(var(--sheet) - 34px);align-items:center;gap:9px;padding:5px 14px 5px 9px;border-radius:999px;background:rgba(8,20,36,.72);border:1px solid var(--line);color:var(--ink-soft);font-size:12px;white-space:nowrap;pointer-events:none;transition:bottom .35s ease,opacity .3s}
-  .swh.pl{bottom:calc(var(--sheet) + 10px)}
+  .swh{display:flex;position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(var(--sheet) - 46px);align-items:center;gap:9px;padding:5px 14px 5px 9px;border-radius:999px;background:none;border:1px solid transparent;color:var(--dim);font-size:12px;letter-spacing:.04em;white-space:nowrap;pointer-events:none;transition:bottom .35s ease,opacity .3s}
+  .swh.pl{bottom:calc(var(--sheet) + 16px);background:rgba(8,20,36,.78);border-color:var(--line);color:var(--ink-soft)}
   .swh i{position:relative;width:14px;height:22px;border:1.5px solid var(--ink-soft);border-radius:9px;flex:none}
   .swh i::after{content:"";position:absolute;left:50%;bottom:4px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--amber);animation:sw 1.6s ease-in-out infinite}
   .swh.dn i::after{bottom:auto;top:4px;animation-name:swd}
   @keyframes sw{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(-9px);opacity:0}100%{opacity:0}}
   @keyframes swd{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(9px);opacity:0}100%{opacity:0}}
-  body.s0 .pin{padding-top:44px}
+  body.s0 .pin{padding-top:62px}
   .ticks{display:none}
   body.editing .swh{display:none}
   .lights{top:calc(var(--top) + env(safe-area-inset-top,0px) + 32px)}
@@ -345,7 +342,7 @@ function stops(){var p=C.passes[passIdx],a=(p.stations||[{f:0},{f:p.n-1}]).map(f
 function hasMorph(){return !!C.passes[passIdx].toPlan}
 var riding=false;function animPos(to,ms,done,lin){riding=false;wStop();cancelAnimationFrame(anim);var from=pos,t0=performance.now(),A=.05,V=1/(1-A);(function tick(now){var k=Math.min(1,(now-t0)/ms),e=lin?(k<A?V*k*k/(2*A):k>1-A?1-V*(1-k)*(1-k)/(2*A):V*(k-A/2)):(k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2);pos=from+(to-from)*e;if(k<1){draw();anim=requestAnimationFrame(tick)}else{anim=null;draw();if(done)done()}})(t0)}
 function legMs(a,b){var p=C.passes[passIdx],pf=PFv(),fr=Math.abs(Math.min(b,pf)-Math.min(a,pf))/pf*(p.n-1);return Math.max(700,fr/(p.fps||24)*1000*.6+(Math.max(a,b)>pf?900:0))}
-function ride(){if(step!==0||tv||edit||!hasMorph()){go(1);return}var pk=packs[passIdx];if(!pk||!pk.ready||pos>=1)return;$('Lpass').classList.add('used');animPos(1,legMs(pos,1),function(){riding=false;if(pos>=1)setStep(1)},true);riding=true}
+function ride(){if(step!==0||tv||edit||!hasMorph()){go(1);return}var pk=packs[passIdx];if(!pk||!pk.ready||pos>=1)return;$('Lpass').classList.add('used');animPos(1,Math.min(1200,Math.max(500,legMs(pos,1)*.16)),function(){riding=false;if(pos>=1)setStep(1)});riding=true}
 function stopRide(){if(anim&&riding){cancelAnimationFrame(anim);anim=null;riding=false;return true}return false}
 function back0(){if(step!==0||anim||!hasMorph()||pos<=0)return false;var sp=stops(),tg=0;for(var q=sp.length-1;q>=0;q--)if(sp[q]<pos-.004){tg=sp[q];break}animPos(tg,legMs(pos,tg));return true}
 function go(i,quiet){
@@ -367,7 +364,7 @@ function setStep(i){step=i;if(step!==0)clearMorph();
 }
 function renderTicks(){
   var T=$('ticks');T.setAttribute('aria-label',lang()==='ru'?'Шаги':'Steps');
-  var S=tv?0:step;T.innerHTML=t('steps').map(function(s,i){return '<li class="'+(i===S?'on':'')+'"><button data-s="'+i+'">'+esc(s)+'</button></li>'}).join('')+'<li class="cta"><button data-cta="1">'+esc(t('cta'))+'</button></li>';
+  var S=tv?0:step;T.innerHTML=t('steps').map(function(s,i){return '<li class="'+(i===S?'on':'')+'"><button data-s="'+i+'">'+esc(s)+'</button></li>'}).join('')+'<li class="ctal"><button data-cta="1">'+esc(t('cta'))+'</button></li>';
   $('cnt').textContent='';var sh=$('swh');sh.className='swh '+(tv?'tvm dn':(step===1?'pl dn':'up'));sh.querySelector('span').textContent=t(tv?'swTv':(step===1?'swPlan':'swipe'));document.body.classList.toggle('s0',step===0);
   
   $('mUp').setAttribute('aria-label',t('up'));$('mDn').setAttribute('aria-label',t('dn'));
