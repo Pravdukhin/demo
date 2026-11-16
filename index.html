@@ -84,7 +84,9 @@ g.flash .sel{opacity:1;animation:fl 1.2s ease}
 .lights button[aria-pressed="true"]{border-color:var(--amber);color:var(--ink)}
 body.tv .lights{display:none}
 .meta .cnt{font-variant-numeric:tabular-nums;color:var(--ink)}
-.lng{position:fixed;z-index:46;top:calc(8px + env(safe-area-inset-top,0px));right:var(--pad-r)}
+.lng{position:fixed;z-index:46;top:calc(8px + env(safe-area-inset-top,0px));right:var(--pad-r);display:flex;align-items:center;gap:8px}.lng[hidden]{display:none}
+.home{height:32px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--amber);border-radius:999px;background:var(--btn-fill);color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.02em;white-space:nowrap;transition:background .2s;-webkit-tap-highlight-color:transparent}.home:hover{background:rgba(8,20,36,.65)}
+@media (max-width:760px){.home{height:30px;padding:0 10px;font-size:12px}.lng{gap:4px}}
 .lsw{appearance:none;height:32px;min-width:46px;border:0;border-radius:16px;background:rgba(8,20,36,.35);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 11px 0 13px;font:inherit;font-size:13px;letter-spacing:.05em;-webkit-tap-highlight-color:transparent;transition:background .2s}
 .lsw:hover,.lsw[aria-expanded="true"]{background:rgba(8,20,36,.65)}
 .lsw .cv{width:7px;height:7px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:translateY(-2px) rotate(45deg)}
@@ -288,7 +290,7 @@ g.on .eyebg{fill:#fff}
 </div>
 <div class="shade" id="shade"></div>
 
-<div class="lng" id="lng" hidden><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
+<div class="lng" id="lng" hidden><a class="home" id="home" href="https://pravdukhin.com/#presentation">← pravdukhin.com</a><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
 <div class="tb" id="tb"><button class="logo" data-cta="1"><span data-i="logo"></span></button><div class="tbt"><span data-i="mark"></span><button class="alink" data-cta="1" data-i="howto"></button></div></div><span id="cnt" hidden></span>
 <div class="lights" id="lights" hidden></div>
 <div class="lights decor" id="decor" hidden></div>
@@ -436,7 +438,7 @@ function renderPanel(){
       '<div class="tools"><button class="btn" id="saveBtn">'+esc(t('saveBtn'))+'</button><button class="btn" id="copyBtn">'+esc(t('copy'))+'</button><button class="ghostlink" id="resetBtn">'+esc(t('reset'))+'</button></div><textarea class="copybox" id="copyBox" readonly hidden></textarea><div class="ctaLine"><button class="alink" data-cta="1">'+esc(t('ctaLine'))+'</button></div>';
   }else{
     h='<p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
-      '<div class="row" style="margin-top:14px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
+      '<div class="row" style="margin-top:14px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+'https://pravdukhin.com/?lang='+lang()+'#how'+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div>'+
       '<p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p>';
   }
   P.innerHTML=h;P.scrollTop=0;
@@ -731,7 +733,7 @@ document.addEventListener('keydown',function(e){
 /* ---------- окно «для вашего проекта» ---------- */
 var ctaOn=false;
 function openCta(){var m=$('cta');m.innerHTML='<div class="cbox" role="dialog" aria-modal="true"><button class="cx" id="ctaX" aria-label="'+esc(t('close'))+'">×</button><p class="label">'+esc(t('eLabel'))+'</p><h2>'+esc(t('eTitle'))+'</h2><p class="lead">'+esc(t('eText'))+'</p><p class="lead">'+esc(t('eText2'))+'</p>'+
-  '<div class="row" style="margin-top:18px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+esc(C.links.stages)+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div><p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p></div>';
+  '<div class="row" style="margin-top:18px"><a class="btn" href="'+(lang()==='ru'?'https://t.me/Iurii_Pravdukhin':'https://wa.me/393498929736')+'" target="_blank" rel="noopener">'+esc(t('cBtn'))+'</a><a class="alink" href="'+'https://pravdukhin.com/?lang='+lang()+'#how'+'" target="_blank" rel="noopener">'+esc(t('wLink'))+'</a></div><p class="small" style="margin-top:18px">'+esc(t('foot'))+'</p></div>';
   m.hidden=false;ctaOn=true;requestAnimationFrame(function(){m.classList.add('on')});$('ctaX').onclick=closeCta}
 function closeCta(){var m=$('cta');m.classList.remove('on');ctaOn=false;setTimeout(function(){if(!ctaOn)m.hidden=true},260)}
 $('cta').addEventListener('click',function(e){if(e.target===$('cta'))closeCta()});
@@ -781,7 +783,7 @@ if(!window.SITE_NAV){$('lng').hidden=false;document.documentElement.lang=(functi
   var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
   if(/^(Europe\/(Kyiv|Kiev|Uzhgorod|Zaporozhye)|Asia\/Tbilisi)$/.test(tz))return 'en';
   if(/^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Minsk|Chisinau|Tiraspol)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr|Almaty|Qostanay|Aqtobe|Aqtau|Atyrau|Oral|Qyzylorda|Bishkek|Tashkent|Samarkand|Dushanbe|Ashgabat|Yerevan|Baku))$/.test(tz))return 'ru';
-  return /^ru\b/i.test(navigator.language||'')?'ru':'en'})();function lsOpen(o){$('lsd').classList.toggle('open',o);$('lsw').setAttribute('aria-expanded',o?'true':'false')}$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.id==='lsw'){lsOpen(!$('lsd').classList.contains('open'));return}if(b.dataset.l){document.documentElement.lang=b.dataset.l;try{localStorage.setItem('lang',b.dataset.l)}catch(x){}lsOpen(false)}});document.addEventListener('pointerdown',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)});window.addEventListener('wheel',function(){lsOpen(false)},{passive:true});document.addEventListener('touchmove',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)},{passive:true})}
+  return /^ru\b/i.test(navigator.language||'')?'ru':'en'})();function setHome(){var h=$('home');if(h)h.href='https://pravdukhin.com/?lang='+lang()+'#presentation'}function lsOpen(o){$('lsd').classList.toggle('open',o);$('lsw').setAttribute('aria-expanded',o?'true':'false')}$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.id==='lsw'){lsOpen(!$('lsd').classList.contains('open'));return}if(b.dataset.l){document.documentElement.lang=b.dataset.l;setHome();try{document.dispatchEvent(new CustomEvent('sitelang',{bubbles:true,detail:{lang:b.dataset.l}}))}catch(x){}try{localStorage.setItem('lang',b.dataset.l)}catch(x){}lsOpen(false)}});document.addEventListener('pointerdown',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)});window.addEventListener('wheel',function(){lsOpen(false)},{passive:true});document.addEventListener('touchmove',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)},{passive:true})}
 new MutationObserver(applyText).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 loadState();
 curTable=(C.startTable!=null?C.startTable:tables[Math.min(8,tables.length-1)].n);
@@ -790,7 +792,6 @@ applyText();onHash();
 })();
 </script>
 
+<script>(function(){var h=document.getElementById("home");if(!h)return;function u(){var l=(document.documentElement.lang||"ru").slice(0,2)==="ru"?"ru":"en";h.href="https://pravdukhin.com/?lang="+l+"#presentation"}u();h.addEventListener("pointerdown",u);h.addEventListener("click",u);new MutationObserver(u).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]})})()</script>
 </body>
 </html>
-
-<!-- build 2026-11-11 22:16 -->
