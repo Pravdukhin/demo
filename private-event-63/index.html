@@ -274,6 +274,7 @@ g.on .eyebg{fill:#fff}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .btn.off{opacity:.55}
 .tools{flex-wrap:wrap}
+.lng.hasnav{top:calc(12px + env(safe-area-inset-top,0px));right:calc(max(12px,env(safe-area-inset-right,0px)) + 54px);height:46px;gap:8px}.lng.hasnav .lsw{height:46px;min-width:46px;border-radius:23px;font-size:14px;padding:0 13px 0 15px}.lng.hasnav .home{height:36px}.lng.hasnav .lsd{top:54px}.lights{top:calc(66px + env(safe-area-inset-top,0px))}.decor{top:calc(102px + env(safe-area-inset-top,0px))}@media (max-width:760px){.lng.hasnav{gap:6px}.lng.hasnav .home{height:32px;padding:0 10px;font-size:12px}.tb{top:calc(19px + env(safe-area-inset-top,0px))}.logo{padding:7px 8px;letter-spacing:.12em}.lights{top:calc(66px + env(safe-area-inset-top,0px))}.decor{top:calc(96px + env(safe-area-inset-top,0px))}}@media (min-width:761px){.lng.hasnav .home{height:46px;padding:0 18px;font-size:14px}.tb{top:calc(12px + env(safe-area-inset-top,0px))}.logo{height:46px;padding:0 16px;display:flex;align-items:center}.lights,.decor{right:max(12px,env(safe-area-inset-right,0px))}}@media (max-width:380px){.lng.hasnav{gap:5px}.lng.hasnav .home{padding:0 7px;font-size:10.5px}.logo{padding:7px 7px;letter-spacing:.06em}}
 </style>
 </head>
 <body>
@@ -288,7 +289,7 @@ g.on .eyebg{fill:#fff}
 </div>
 <div class="shade" id="shade"></div>
 
-<div class="lng" id="lng" hidden><a class="home" id="home" href="https://pravdukhin.com/#presentation">← pravdukhin.com</a><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
+<div class="lng hasnav" id="lng" hidden><a class="home" id="home" href="https://pravdukhin.com/#presentation">← pravdukhin.com</a><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
 <div class="tb" id="tb"><button class="logo" data-cta="1"><span data-i="logo"></span></button><div class="tbt"><span data-i="mark"></span><button class="alink" data-cta="1" data-i="howto"></button></div></div><span id="cnt" hidden></span>
 <div class="lights" id="lights" hidden></div>
 <div class="lights decor" id="decor" hidden></div>
@@ -504,7 +505,7 @@ function tableAt(cx,cy){var p=planXY(cx,cy),best=null,bd=1e9,minR=24/p[2];tables
 /* ---------- раскладка сцены ---------- */
 function sheetH(){if(tv&&tv.sh)return tv.sh;return phone()?Math.round($('pin').getBoundingClientRect().height):0}
 function layout(){
-  var vw=window.innerWidth,vh=window.innerHeight,sh=sheetH(),top=phone()?108:64,r;
+  var vw=window.innerWidth,vh=window.innerHeight,sh=sheetH(),top=phone()?126:64,r;
   document.documentElement.style.setProperty('--sheet',sh+'px');
   if(phone())r={x:8,y:top+10,w:vw-16,h:Math.max(120,vh-sh-top-20)};
   else{var left=$('pin').getBoundingClientRect().right+28,right=$('ticks').getBoundingClientRect().left-28;r={x:left,y:top+12,w:Math.max(200,right-left),h:vh-top-36}}
@@ -791,5 +792,6 @@ applyText();onHash();
 </script>
 
 <script>(function(){var h=document.getElementById("home");if(!h)return;function u(){var l=(document.documentElement.lang||"ru").slice(0,2)==="ru"?"ru":"en";h.href="https://pravdukhin.com/?lang="+l+"#presentation"}u();h.addEventListener("pointerdown",u);h.addEventListener("click",u);new MutationObserver(u).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]})})()</script>
+<script src="https://concept.pravdukhin.com/v8/nav.js?v=20" data-v="D" data-page="pres" data-main="https://pravdukhin.com/" data-scan="https://pravdukhin.com/3d-venue-scanning/"></script>
 </body>
 </html>
