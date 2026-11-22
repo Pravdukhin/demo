@@ -301,7 +301,7 @@ g.on .eyebg{fill:#fff}
 <div class="toast" id="toast"></div>
 <div class="cta" id="cta" hidden></div>
 
-<script src="config.js?v=2"></script>
+<script src="config.js?v=3"></script>
 <script>
 (function(){
 "use strict";
@@ -427,7 +427,7 @@ function renderPanel(){
   }else if(step===0){
     h='<p class="label">'+esc(t('hLabel'))+'</p><h1>'+esc(t('title'))+'</h1><p class="lead">'+esc(t('p1'))+'</p><p class="lead">'+esc(t('p2'))+'</p>'+
       (false?'<div class="tabs" role="group">'+C.passes.map(function(p,i){return '<button data-pass="'+i+'" aria-pressed="'+(i===passIdx)+'">'+esc(t('pass'+p.id))+'</button>'}).join('')+'</div>':'')+
-      (C.mode==='zones'?'<div class="facts"><div><b>'+tables.length+'</b><span>'+(lang()==='ru'?'вида с мест':'seat views')+'</span></div><div><b>2</b><span>'+(lang()==='ru'?'схемы: зал и подвес':'plans: hall and rigging')+'</span></div></div>':'<div class="facts"><div><b>'+tables.length+'</b><span>'+esc(t('tables'))+'</span></div><div><b>'+tables.reduce(function(a,x){return a+x.pos.length},0)+'</b><span>'+esc(t('seats'))+'</span></div></div>')+
+      (C.mode==='zones'?'<div class="facts"><div><b>'+tables.length+'</b><span>'+(lang()==='ru'?'точек обзора':'viewpoints')+'</span></div><div><b>2</b><span>'+(lang()==='ru'?'схемы: зал и подвес':'plans: hall and rigging')+'</span></div></div>':'<div class="facts"><div><b>'+tables.length+'</b><span>'+esc(t('tables'))+'</span></div><div><b>'+tables.reduce(function(a,x){return a+x.pos.length},0)+'</b><span>'+esc(t('seats'))+'</span></div></div>')+
       '<div class="next"><button class="alink" data-go="1">'+esc(t('go2'))+'</button></div>';
   }else if(step===1){
     var a=seatedCount();
