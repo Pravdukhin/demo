@@ -302,7 +302,7 @@ g.on .eyebg{fill:#fff}
 <div class="toast" id="toast"></div>
 <div class="cta" id="cta" hidden></div>
 
-<script src="config.js?v=4"></script>
+<script src="config.js?v=5"></script>
 <script>
 (function(){
 "use strict";
@@ -722,10 +722,10 @@ document.addEventListener('keydown',function(e){
 (function(){var ts=null;
   document.addEventListener('touchstart',function(e){ts=null;if(e.touches.length!==1||drag||edit||ctaOn)return;var c=e.touches[0],g=e.target;
     if(g.closest&&g.closest('button,a,.rail,.lights,.lng,.chip'))return;
-    ts={x:c.clientX,y:c.clientY,lx:c.clientX,ly:c.clientY,m:null,pin:!!(g.closest&&g.closest('.pin'))}},{passive:true});
+    ts={x:c.clientX,y:c.clientY,lx:c.clientX,ly:c.clientY,m:null,pin:!!(g.closest&&g.closest('.pin')),st:$('pin').scrollTop,hint:!!(g.closest&&g.closest('.swipe,.sw,[class*=swipe]'))}},{passive:true});
   document.addEventListener('touchmove',function(e){if(!ts||drag)return;var c=e.touches[0],dx=c.clientX-ts.x,dy=c.clientY-ts.y;
     if(ts.m===null){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;ts.m=Math.abs(dy)>=Math.abs(dx)?'v':'h';ts.lx=c.clientX;ts.ly=c.clientY}
-    if(step===1){if(ts.pin||ts.m!=='v'||dy<90)return;e.preventDefault();if(anim)return;pos=1;setStep(0);$('Lpass').classList.add('used');ts.ly=c.clientY;return}
+    if(step===1){if(ts.m!=='v'||dy<=0)return;if(ts.pin&&(ts.st>2||!ts.hint&&!C.mode))return;if(ts.pin&&e.cancelable)e.preventDefault();if(dy<60)return;if(e.cancelable)e.preventDefault();if(anim)return;pos=1;setStep(0);$('Lpass').classList.add('used');ts.ly=c.clientY;return}
     if(step!==0||!hasMorph())return;e.preventDefault();var pk=packs[passIdx];if(!pk||!pk.ready)return;
     if(anim){if(!tv&&!riding)return;cancelAnimationFrame(anim);anim=null;riding=false}
     var d=ts.m==='v'?(ts.ly-c.clientY):(c.clientX-ts.lx);ts.lx=c.clientX;ts.ly=c.clientY;if(d)wheelScrub((tv?-1:1)*d*4)},{passive:false});
