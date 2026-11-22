@@ -7,6 +7,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Конференция на 709 мест: интерактивная презентация</title>
 <meta name="robots" content="noindex,nofollow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://demo.pravdukhin.com/conference-709/">
+<meta property="og:title" content="Conference, 709 seats: walk through the hall before the event">
+<meta property="og:description" content="Interactive project presentation: the hall from the entrance to the stage, the plan, and the view of the stage from five spots.">
+<meta property="og:image" content="https://demo.pravdukhin.com/v3-bel/media/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Interactive project presentation: a 709-seat conference hall, from the entrance to the stage.">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <!--
   Шаблон «Демо-зал» v2: один экран. Сцена на весь экран, текст слева (на телефоне панель снизу), справа шкала шагов.
@@ -302,7 +311,7 @@ g.on .eyebg{fill:#fff}
 <div class="toast" id="toast"></div>
 <div class="cta" id="cta" hidden></div>
 
-<script src="config.js?v=5"></script>
+<script src="config.js?v=6"></script>
 <script>
 (function(){
 "use strict";
@@ -497,7 +506,7 @@ function renderPlan(){
       el('circle',{cx:0,cy:0,r:12,'class':'eyebg'},eg);el('path',{d:'M-8 0s2.9-5.2 8-5.2S8 0 8 0s-2.9 5.2-8 5.2S-8 0-8 0z','class':'eyeo'},eg);el('circle',{cx:0,cy:0,r:2.4,'class':'eyep'},eg)}
   });placeTvBtn();
 }
-function placeTvBtn(){var b=$('tvBtn');if(!b)return;var tb=curTable!=null?byN[curTable]:null,ok=step===1&&!tv&&!edit&&tb&&tvPass(tb.n)>=0;b.hidden=!ok;if(!ok)return;
+function placeTvBtn(){var b=$('tvBtn');if(!b)return;var tb=curTable!=null?byN[curTable]:null,ok=!C.mode&&step===1&&!tv&&!edit&&tb&&tvPass(tb.n)>=0;b.hidden=!ok;if(!ok)return;
   var pb=$('plan'),pl0=parseFloat(pb.style.left)||0,pt0=parseFloat(pb.style.top)||0,sc=(parseFloat(pb.style.width)||600)/W;b.dataset.tv=tb.n;b.querySelector('span').textContent=t('goView');
   var bw=b.offsetWidth||170,bh=b.offsetHeight||40,x=pl0+tb.x*sc-bw/2,y=pt0+(tb.y-tb.r*1.9)*sc-bh-8;if(y<(phone()?118:70))y=pt0+(tb.y+tb.r*1.9)*sc+8;
   x=Math.max(8,Math.min(window.innerWidth-bw-8,x));b.style.left=x+'px';b.style.top=y+'px'}
@@ -579,7 +588,7 @@ $('plan').addEventListener('pointerup',function(e){
   if(!pdown||edit)return;var mv=Math.hypot(e.clientX-pdown.x,e.clientY-pdown.y);pdown=null;if(mv>10)return;
   var tb=tableAt(e.clientX,e.clientY);if(!tb)return;
   if(picked&&(!at[picked]||at[picked][0]!==tb.n)&&seatsOf(tb.n).indexOf(null)>=0){moveToTable(picked,tb.n);return}
-  selectTable(tb.n);
+  selectTable(tb.n);if(C.mode){openTV(tb.n);return}
 });
 
 /* ---------- вид из зоны ---------- */
