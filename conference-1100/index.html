@@ -90,7 +90,7 @@ button{font:inherit;color:inherit}
 .big{position:fixed;z-index:8;left:calc(50% + var(--colw) / 2);top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;border:1px solid var(--amber);background:rgba(8,20,36,.6);cursor:pointer;display:grid;place-items:center}
 .big svg{width:28px;height:28px;fill:var(--ink);margin-left:5px}
 
-.lng{position:fixed;z-index:46;top:calc(12px + env(safe-area-inset-top,0px));right:var(--pad-r);display:flex;gap:6px}
+.lng{position:fixed;z-index:46;top:calc(12px + env(safe-area-inset-top,0px));right:calc(var(--pad-r) + 62px);display:flex;gap:6px}
 .lng button{appearance:none;height:30px;min-width:40px;border:1px solid var(--line);border-radius:999px;background:var(--btn-fill);cursor:pointer;font-size:12px;letter-spacing:.05em;color:var(--ink-soft)}
 .lng button[aria-pressed="true"]{border-color:var(--amber);color:var(--ink)}
 
