@@ -191,8 +191,8 @@ var CH=[
  {t:77.4,ru:{k:'Схема',l:'Схема зала',h:'От сцены к схеме',p:['Камера поднимается над залом, и он превращается в схему рассадки. На ней отмечены столы: с каждого можно посмотреть, как видно сцену.']},
        en:{k:'Plan',l:'Hall plan',h:'From the stage to the plan',p:['The camera rises above the hall and it turns into the seating plan. Tables are marked on it: from each one you can check the view of the stage.']}}
 ];
-var T={ru:{planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на отметку на схеме или на строку в списке: откроется вид на сцену с этого стола.',again:'Смотреть фильм сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад к фильму',swView:'Назад к схеме'},
-       en:{planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the film again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to the film',swView:'Back to the plan'}};
+var T={ru:{planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на отметку на схеме или на строку в списке: откроется вид на сцену с этого стола.',again:'Смотреть 3D сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад в 3D',swView:'Назад к схеме'},
+       en:{planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
 /* столы с видами: координаты на плане 2800x632 поставлены по догадке, сверить с Юрием */
 var TB=[
  {n:1,x:2002,y:319,img:'media/tv1.jpg',ru:'В центре зала',en:'Centre of the hall'},
@@ -225,7 +225,7 @@ V.forEach(function(v){
 /* перейти ко времени t. Внутри текущего отрезка просто перемотка; в другой отрезок грузим в скрытый тег и меняем местами, когда кадр готов */
 function seek(t,play){
   t=Math.max(0,Math.min(TOTAL-0.05,t));ended=false;pos=t;playWant=false;
-  var i=Math.min(N-1,Math.floor(t/SEG)),o=Math.max(0.01,t-i*SEG),a=A(),b=B();wantSeg=i;
+  var i=Math.min(N-1,Math.floor(t/SEG)),o=Math.max(i===0?0.1:0.01,t-i*SEG),a=A(),b=B();wantSeg=i;
   if(seg===i&&a.getAttribute('data-i')===String(i)){b._cb=null;setCT(a,o);if(play)start();else prep(b,(o<SEG/2&&i>0)?i-1:i+1);return}
   if(seg<0){seg=i;a.setAttribute('data-i',i);a._w=o;a._t=o;a.src=src(i);a.load();prep(b,i+1);if(play)start();return}
   loadAt(b,i,o,function(){if(wantSeg!==i)return;b.classList.add('on');a.classList.remove('on');a.pause();act=1-act;seg=i;prep(a,i+1);if(play||playWant){playWant=false;start()}else icon()});
@@ -260,7 +260,7 @@ window.addEventListener('wheel',function(e){
   if(mode==='view')return;
   if(mode==='plan'){if(pin&&pin.scrollHeight>pin.clientHeight+4)return;e.preventDefault();if(now-pT>500)pAcc=0;pT=now;if(dy<0){pAcc-=dy;if(pAcc>150){pAcc=0;toFilm(TOTAL-0.4,false)}}return}
   e.preventDefault();
-  if(playing()){if(now-wT>450)wAcc=0;wT=now;wAcc+=Math.abs(dy);if(wAcc<140)return;wAcc=0;stop();return}
+  if(playing()){if(now-wT>450)wAcc=0;wT=now;wAcc+=Math.abs(dy);if(wAcc<50)return;wAcc=0;stop();return}
   scrub(dy*0.012);
 },{passive:false});
 var ts=null;
