@@ -227,7 +227,7 @@ var TB=[
  {n:2,x:1458.1,y:463.8,img:'media/n2.jpg',ru:'Стол B76',en:'Table B76'},
  {n:3,x:488.2,y:624.9,img:'media/n3b.jpg',ru:'Стол A51',en:'Table A51'},
  {n:4,x:690.1,y:624.9,img:'media/n4.jpg',ru:'Стол A56',en:'Table A56'},
- {n:5,x:1215.7,y:463.8,img:'media/n5b.jpg',ru:'Стол B70',en:'Table B70'},
+ {n:5,x:1215.7,y:463.8,img:'media/n5b.jpg',pass:'media/p5.mp4',back:'media/p5r.mp4',ru:'Стол B70',en:'Table B70'},
  {n:6,x:1100.1,y:544.4,img:'media/n6.jpg',ru:'Стол B89',en:'Table B89'},
  {n:7,x:655.8,y:544.3,img:'media/n7.jpg',ru:'Стол A33',en:'Table A33'},
  {n:8,x:545.9,y:423.1,img:'media/n8.jpg',ru:'Стол A1',en:'Table A1'},
@@ -349,24 +349,20 @@ function mtx(c){var r=$('planImg').getBoundingClientRect(),v=vbox(),k=Math.max(v
   var M=[k*A[0][0]*s1,k*A[1][0]*s1,k*A[0][1]*s1,k*A[1][1]*s1],tx=ox+k*(A[0][0]*180+A[0][1]*690+A[0][2]),ty=oy+k*(A[1][0]*180+A[1][1]*690+A[1][2]);
   return {r:r,m:'matrix('+M.concat([tx-r.left,ty-r.top]).join(',')+')'}}
 function mkClone(r){var d=document.createElement('div');d.className='pclone';d.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px';d.innerHTML='<img src="media/plan.webp" alt="">';$('Lpass').appendChild(d);return d}
-var PB=0,RATE=1.6;
+var PB=0,RATE=1.7;
 function vidReady(v,src,cb){v.style.opacity=0;if(v.getAttribute('src')!==src){v.src=src}var done=false;function go(){if(done)return;done=true;cb()}
   if(v.readyState>=2){try{v.currentTime=0}catch(e){}setTimeout(go,30)}else{v.addEventListener('loadeddata',go,{once:true});v.load()}setTimeout(go,2500)}
 function openView(n){var c=TB.filter(function(b){return b.n===n})[0];if(!c)return;
-  if(!c.pass||!c.a){cur=c;mode='view';$('vImg').src=c.img;show('Lview');panel();return}
-  if(PB)return;PB=1;var v=$('pv'),q=mtx(c),cl=mkClone(q.r);cur=c;$('vImg').src=c.img;$('svg').style.opacity=0;
-  mode='view';show('Lpass');panel();
-  vidReady(v,c.pass,function(){if(PB!==1)return;requestAnimationFrame(function(){cl.style.transition='transform 1.1s cubic-bezier(.45,0,.25,1)';cl.style.transform=q.m;
-    setTimeout(function(){if(PB!==1)return;v.style.opacity=1;setTimeout(function(){cl.remove()},160);v.playbackRate=RATE;var p=v.play();if(p&&p.catch)p.catch(function(){endIn(c)})},1150)})});
+  if(!c.pass){cur=c;mode='view';$('vImg').src=c.img;show('Lview');panel();return}
+  if(PB)return;PB=1;var v=$('pv');cur=c;$('vImg').src=c.img;mode='view';panel();
+  vidReady(v,c.pass,function(){if(PB!==1)return;v.style.opacity=1;show('Lpass');v.playbackRate=RATE;var p=v.play();if(p&&p.catch)p.catch(function(){endIn(c)})});
   v.onended=function(){endIn(c)}}
-function endIn(c){if(PB!==1||cur!==c)return;PB=0;show('Lview');$('svg').style.opacity=1;[].forEach.call(document.querySelectorAll('.pclone'),function(x){x.remove()})}
-/* назад: камера поднимается, схема разворачивается обратно */
-function back(){var c=cur;if(mode!=='view'||!c||!c.back||!c.a||PB){toPlan();return}PB=2;var v=$('pv');
+function endIn(c){if(PB!==1||cur!==c)return;PB=0;show('Lview')}
+/* назад: камера поднимается обратно в схему, ролик кончается ровно на кадре схемы */
+function back(){var c=cur;if(mode!=='view'||!c||!c.back||PB){toPlan();return}PB=2;var v=$('pv');
   vidReady(v,c.back,function(){if(PB!==2)return;v.style.opacity=1;show('Lpass');v.playbackRate=RATE;var p=v.play();if(p&&p.catch)p.catch(function(){PB=0;toPlan()})});
-  v.onended=function(){if(PB!==2)return;$('svg').style.opacity=0;toPlan();var q=mtx(c),cl=mkClone(q.r);show('Lpass');PB=2;cl.style.transform=q.m;v.style.opacity=0;
-    requestAnimationFrame(function(){requestAnimationFrame(function(){cl.style.transition='transform 1.1s cubic-bezier(.45,0,.25,1)';cl.style.transform='none';
-      setTimeout(function(){PB=0;show('Lplan');$('svg').style.opacity=1;setTimeout(function(){cl.remove()},520)},1120)})})}}
-$('Lpass').addEventListener('click',function(){if(PB===1){var c=cur;$('pv').pause();endIn(c)}else if(PB===2){$('pv').pause();PB=0;toPlan();$('svg').style.opacity=1;[].forEach.call(document.querySelectorAll('.pclone'),function(x){x.remove()})}});
+  v.onended=function(){if(PB!==2)return;PB=0;toPlan()}}
+$('Lpass').addEventListener('click',function(){if(PB===1){$('pv').pause();endIn(cur)}else if(PB===2){$('pv').pause();PB=0;toPlan()}});
 function marks(){var o='<text class="half" x="233.9" y="542.4">A</text><text class="half" x="1696.2" y="542.6">B</text>';
   TBL.forEach(function(t){var v=TB.filter(function(b){return Math.abs(b.x-t[1])<4&&Math.abs(b.y-t[2])<4})[0];
     if(v)o+='<g class="mk'+(cur&&cur.n===v.n?' on':'')+'" data-t="'+v.n+'"><circle class="h" cx="'+t[1]+'" cy="'+t[2]+'" r="24"/><circle class="r" cx="'+t[1]+'" cy="'+t[2]+'" r="17.5"/><text x="'+t[1]+'" y="'+(t[2]+1)+'">'+t[0]+'</text></g>';
