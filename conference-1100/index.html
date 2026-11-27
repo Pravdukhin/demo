@@ -57,7 +57,8 @@ button{font:inherit;color:inherit}
 .pp{appearance:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--amber);background:var(--btn-fill);cursor:pointer;flex:none;display:grid;place-items:center}
 .pp svg{width:14px;height:14px;fill:var(--ink)}
 .rail{position:relative;flex:1;height:30px;cursor:pointer;touch-action:none}
-.rail::before{content:"";position:absolute;left:0;right:0;top:14px;height:2px;background:rgba(232,236,241,.26)}
+.rail::before{content:"";position:absolute;left:0;right:0;top:14px;height:2px;background:rgba(232,236,241,.14)}
+.rail u{position:absolute;left:0;right:0;top:14px;height:2px;text-decoration:none;pointer-events:none}
 .rail i{position:absolute;left:0;top:14px;height:2px;background:rgba(232,236,241,.6);width:0}
 .rail b{position:absolute;top:9px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber-glow);left:0;pointer-events:none}
 .rail s{position:absolute;top:11px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--night);border:1.5px solid var(--ink-soft)}
@@ -153,7 +154,7 @@ button{font:inherit;color:inherit}
 <div class="lng" id="lng"><a class="home" id="home" href="https://pravdukhin.com/#interactive">← pravdukhin.com</a><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
 <ol class="ticks" id="ticks"></ol>
 <div class="panel"><div class="pin" id="pin" aria-live="polite"></div></div>
-<div class="bar" id="bar"><button class="pp" id="pp" aria-label="Play"></button><div class="rail" id="rail"><i id="fill"></i><b id="knob"></b></div><span class="tm" id="tm"></span></div>
+<div class="bar" id="bar"><button class="pp" id="pp" aria-label="Play"></button><div class="rail" id="rail"><u id="ld"></u><i id="fill"></i><b id="knob"></b></div><span class="tm" id="tm"></span></div>
 <button class="swh" id="swh"><i></i><span></span></button>
 <button class="big" id="big" hidden aria-label="Play"><svg viewBox="0 0 24 24"><path d="M5 3l16 9-16 9z"/></svg></button>
 
@@ -168,9 +169,10 @@ function url(i){return 'media/'+(small?'m':'f')+(i<10?'0':'')+i+'.mp4'}
 function src(i){return BL[i]||url(i)}
 /* отрезки по одному скачиваются в память: прокрутка не ждёт сеть */
 var pfOn=false;
+function ldShow(){var c='rgba(232,236,241,.3)',g=[],k;for(k=0;k<N;k++){var x0=(k*SEG/TOTAL*100).toFixed(2),x1=(Math.min(TOTAL,(k+1)*SEG)/TOTAL*100).toFixed(2),cc=BL[k]?c:'transparent';g.push(cc+' '+x0+'%',cc+' '+x1+'%')}$('ld').style.background='linear-gradient(90deg,'+g.join(',')+')'}
 function prefetch(){if(pfOn)return;pfOn=true;var order=[],c=Math.max(0,seg),k;for(k=0;k<N;k++)order.push((c+k)%N);
   (function nx(){var i=order.shift();if(i==null)return;if(BL[i]){nx();return}
-    fetch(url(i)).then(function(r){return r.ok?r.blob():null}).then(function(b){if(b)BL[i]=URL.createObjectURL(b);setTimeout(nx,60)}).catch(function(){setTimeout(nx,1500)})})()}
+    fetch(url(i)).then(function(r){return r.ok?r.blob():null}).then(function(b){if(b){BL[i]=URL.createObjectURL(b);ldShow()}setTimeout(nx,60)}).catch(function(){setTimeout(nx,1500)})})()}
 
 /* главы фильма: время начала, подпись на шкале, текст */
 var CH=[
@@ -211,10 +213,10 @@ var V=[$('v0'),$('v1')],act=0,seg=-1,mode='film',ch=-1,cur=null,ended=false,drag
 function A(){return V[act]}function B(){return V[1-act]}
 function gt(){if(pos!=null)return pos;return seg<0?0:Math.min(TOTAL,seg*SEG+(A().currentTime||0))}
 function setCT(v,o){v._t=o;if(v.readyState<1||v.seeking){v._w=o;return}v._w=null;try{v.currentTime=o}catch(e){}}
-function loadAt(v,i,o,cb){v._cb=cb||null;v._keep=false;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v._w=o;v._t=o;v.src=src(i);v.load()}else setCT(v,o)}
+function loadAt(v,i,o,cb){v._cb=cb||null;v._keep=false;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v._w=o;v._t=o;v.src=src(i);v.load()}else{setCT(v,o);if(v.readyState>=2)prime(v)}}
 function prep(v,i){v._cb=null;v._w=null;v._t=0;v._keep=false;if(i>=N||i<0)return;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
 /* на iPhone кадр ни разу не игравшего видео не рисуется: коротко запускаем и сразу ставим на паузу */
-function prime(v){var id=v.getAttribute('data-i');if(v._pr===id||!v.paused||v._keep)return;v._pr=id;var p=v.play();
+function prime(v){var id=v.getAttribute('data-i');if(v._pr===id||!v.paused||v._keep)return;if(v!==A()&&!A().paused)return;v._pr=id;var p=v.play();
   if(p&&p.then)p.then(function(){if(v._keep)return;v.pause();if(v._t!=null){try{v.currentTime=v._t}catch(e){}}}).catch(function(){v._pr=null})}
 V.forEach(function(v){
   v.addEventListener('loadeddata',function(){prime(v)});
@@ -236,9 +238,11 @@ function start(){ended=false;if(B()._cb&&wantSeg!==seg){playWant=true;return}var
 function next(){
   if(seg+1>=N){ended=true;toPlan();return}
   var a=A(),b=B();seg++;act=1-act;wantSeg=seg;b._keep=true;a._keep=false;
-  try{b.currentTime=0}catch(e){}var p=b.play();if(p&&p.catch)p.catch(function(){});
-  b.classList.add('on');a.classList.remove('on');a.pause();
-  prep(a,seg+1);
+  try{b.currentTime=0}catch(e){}
+  var done=false;function sw(){if(done)return;done=true;b.removeEventListener('timeupdate',tu);if(A()!==b)return;b.classList.add('on');a.classList.remove('on');a.pause();if(!a._cb)prep(a,seg+1)}
+  function tu(){if(b.currentTime>0.02)sw()}
+  b.addEventListener('timeupdate',tu);if(b.requestVideoFrameCallback)b.requestVideoFrameCallback(function(){sw()});setTimeout(sw,700);
+  var p=b.play();if(p&&p.catch)p.catch(function(){});
 }
 V.forEach(function(v){v.addEventListener('ended',function(){if(v===A())next()});v.addEventListener('playing',function(){$('big').hidden=true;icon();if(v===A())setTimeout(prefetch,800)});v.addEventListener('pause',icon)});
 function playing(){return !A().paused&&!ended}
