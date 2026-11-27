@@ -90,9 +90,20 @@ button{font:inherit;color:inherit}
 .big{position:fixed;z-index:8;left:calc(50% + var(--colw) / 2);top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;border:1px solid var(--amber);background:rgba(8,20,36,.6);cursor:pointer;display:grid;place-items:center}
 .big svg{width:28px;height:28px;fill:var(--ink);margin-left:5px}
 
-.lng{position:fixed;z-index:46;top:calc(12px + env(safe-area-inset-top,0px));right:calc(var(--pad-r) + 62px);display:flex;gap:6px}
-.lng button{appearance:none;height:30px;min-width:40px;border:1px solid var(--line);border-radius:999px;background:var(--btn-fill);cursor:pointer;font-size:12px;letter-spacing:.05em;color:var(--ink-soft)}
-.lng button[aria-pressed="true"]{border-color:var(--amber);color:var(--ink)}
+.lng{position:fixed;z-index:46;top:calc(12px + env(safe-area-inset-top,0px));right:calc(max(12px,env(safe-area-inset-right,0px)) + 54px);height:46px;display:flex;align-items:center;gap:8px}
+.home{height:36px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--amber);border-radius:999px;background:var(--btn-fill);color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.02em;white-space:nowrap;transition:background .2s;-webkit-tap-highlight-color:transparent}
+.home:hover{background:rgba(8,20,36,.65)}
+.lsw{appearance:none;height:46px;min-width:46px;border:0;border-radius:23px;background:rgba(8,20,36,.35);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;padding:0 13px 0 15px;font:inherit;font-size:14px;letter-spacing:.05em;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.lsw:hover,.lsw[aria-expanded="true"]{background:rgba(8,20,36,.65)}
+.lsw .cv{width:7px;height:7px;border-right:1.5px solid var(--dim);border-bottom:1.5px solid var(--dim);transform:translateY(-2px) rotate(45deg)}
+.lsd{position:absolute;top:54px;right:0;min-width:190px;background:rgba(10,24,42,.97);border:1px solid var(--line);border-radius:14px;padding:6px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.lsd.open{opacity:1;transform:none;pointer-events:auto}
+.lsd button{appearance:none;display:flex;width:100%;align-items:center;gap:12px;border:0;background:none;color:var(--ink);font:inherit;padding:10px 12px;border-radius:9px;cursor:pointer;text-align:left;font-size:15px}
+.lsd button:hover{background:rgba(255,255,255,.05)}
+.lsd .k{width:22px;color:var(--dim);font-size:12px;letter-spacing:.05em}
+.lsd button[aria-pressed="true"],.lsd button[aria-pressed="true"] .k{color:var(--amber)}
+.lsd .ok{margin-left:auto;color:var(--amber);visibility:hidden}
+.lsd button[aria-pressed="true"] .ok{visibility:visible}
 
 @media (max-width:760px){
   :root{--colw:100vw}
@@ -111,6 +122,8 @@ button{font:inherit;color:inherit}
   .planbox img{height:100%;width:auto;max-width:none}
   .big{left:50%;top:calc(var(--top) + 28vw);width:64px;height:64px}
   body.plan .bar,body.view .bar{visibility:hidden}
+  .lng{gap:5px}
+  .home{height:32px;padding:0 10px;font-size:12px}
 }
 </style>
 </head>
@@ -123,7 +136,7 @@ button{font:inherit;color:inherit}
 </div>
 <div class="shade"></div>
 
-<div class="lng" id="lng" hidden><button data-l="ru">RU</button><button data-l="en">EN</button></div>
+<div class="lng" id="lng"><a class="home" id="home" href="https://pravdukhin.com/#presentation">← pravdukhin.com</a><button type="button" class="lsw" id="lsw" aria-haspopup="listbox" aria-expanded="false"><span id="lsc">RU</span><i class="cv"></i></button><div class="lsd" id="lsd" role="listbox"><button type="button" data-l="en" aria-pressed="false"><span class="k">EN</span>English<span class="ok">✓</span></button><button type="button" data-l="ru" aria-pressed="true"><span class="k">RU</span>Русский<span class="ok">✓</span></button></div></div>
 <ol class="ticks" id="ticks"></ol>
 <div class="panel"><div class="pin" id="pin" aria-live="polite"></div></div>
 <div class="bar" id="bar"><button class="pp" id="pp" aria-label="Play"></button><div class="rail" id="rail"><i id="fill"></i><b id="knob"></b></div><span class="tm" id="tm"></span></div>
@@ -139,20 +152,20 @@ function src(i){return 'media/'+(small?'m':'f')+(i<10?'0':'')+i+'.mp4'}
 
 /* главы фильма: время начала, подпись на шкале, текст */
 var CH=[
- {t:0,ru:{k:'Вход',l:'Конференция · 1100 гостей',h:'Гости заходят с двух сторон',p:['Зал разделён пополам двумя проекционными экранами. Гости заходят с разных сторон, рассаживаются за столы и видят перед собой экран с проекцией.','Что находится за ним, не знает никто: каждая половина зала уверена, что это и есть всё пространство.']},
-       en:{k:'Arrival',l:'Conference · 1100 guests',h:'Guests enter from two sides',p:['The hall is split in half by two projection screens. Guests come in from opposite ends, take their seats and see a screen with a projection in front of them.','Nobody knows what is behind it: each half of the room believes this is the whole space.']}},
- {t:4.67,ru:{k:'Кабуки',l:'Система сброса кабуки',h:'Экраны падают, зал становится одним',p:['Экраны висят на кабуки: системе, которая сбрасывает полотно по команде с пульта.','В нужный момент экраны падают, и две половины оказываются одним залом. Гости впервые видят друг друга и сцену в центре.']},
-       en:{k:'Kabuki',l:'Kabuki drop system',h:'The screens fall and the hall becomes one',p:['The screens hang on a kabuki: a system that releases the fabric on a cue from the control desk.','At the right moment the screens drop and the two halves turn out to be one hall. The guests see each other, and the stage in the centre, for the first time.']}},
- {t:9.3,ru:{k:'Зал',l:'Задача',h:'Зал 150 на 29 метров',p:['Основной задачей было комфортно разместить 1100 гостей за столами банкетной рассадки в зале не очень правильной формы. Он состоит из двух и получается очень вытянутым.','Поставить сцену в торце означало, что дальние столы оказались бы в 100 метрах от неё и почти ничего не увидели бы. Полноценная сцена по длинной стороне дала бы огромные мёртвые зоны по краям.']},
-       en:{k:'The hall',l:'The challenge',h:'A hall of 150 by 29 metres',p:['The main challenge was to seat 1100 guests comfortably at banquet tables in a hall of an awkward shape. It is made of two rooms and comes out very long.','A stage at the end would have put the far tables 100 metres away, seeing almost nothing. A full-size stage along the long wall would have left huge dead zones on both sides.']}},
- {t:18.9,ru:{k:'Подиум',l:'Решение',h:'Две сцены и подиум-трансформер',p:['Две относительно небольшие сцены стоят друг напротив друга в центре зала, а подиум-трансформер соединяет их в одну. Спикеры и артисты работают из центра на две стороны, и дальние ряды находятся не более чем в 50 метрах.','Во второй части мероприятия подиум оперативно раздвигается и становится частью сцен: одна сцена остаётся спикерам, вторая артистам.']},
-       en:{k:'Catwalk',l:'The solution',h:'Two stages and a transforming catwalk',p:['Two fairly small stages face each other in the centre of the hall, and a transforming catwalk joins them into one. Speakers and artists work from the centre to both sides, and the far rows are no more than 50 metres away.','In the second part of the event the catwalk quickly splits and becomes part of the stages: one stage stays with the speakers, the other goes to the artists.']}},
- {t:35.6,ru:{k:'Смена',l:'По ходу вечера',h:'Зал меняется вместе с программой',p:['Вместе с подиумом меняются контент на экранах и свет. Одна и та же площадка за вечер проходит несколько состояний.','Каждое из них собрано в проекте заранее: видно, как зал выглядит и как работает в каждой части программы.']},
-       en:{k:'Change',l:'During the evening',h:'The hall changes with the programme',p:['The screen content and the lighting change together with the catwalk. The same venue goes through several states in one evening.','Each of them is built in the project in advance: you can see how the hall looks and works in every part of the programme.']}},
- {t:53.5,ru:{k:'Гости',l:'Обзор',h:'Сцену видно с любого стола',p:['LED-полотна экранов идут по всему залу. Все участники конференции хорошо видят то, что происходит на сценах, где бы ни стоял их стол.']},
+ {t:0,ru:{k:'Задача',l:'Конференция · 1100 гостей',h:'Зал 150 на 29 метров',p:['Задача: комфортно разместить 1100 гостей за банкетными столами в очень вытянутом зале. Он состоит из двух, его длина около 150 метров, а ширина около 29.','Сцена в торце не подходит: дальние столы окажутся в 100 метрах от неё. Сцена по длинной стороне тоже: по краям появятся огромные мёртвые зоны.','Поэтому сцена стоит в центре, а в начале вечера зал разделён пополам двумя проекционными экранами. Гости заходят с двух сторон и видят только свою половину.']},
+       en:{k:'The task',l:'Conference · 1100 guests',h:'A hall of 150 by 29 metres',p:['The task: seat 1100 guests comfortably at banquet tables in a very long hall. It is made of two rooms, about 150 metres long and about 29 metres wide.','A stage at the end does not work: the far tables end up 100 metres away. A stage along the long wall does not work either: it leaves huge dead zones on both sides.','So the stage stands in the centre, and at the start of the evening the hall is split in half by two projection screens. Guests enter from two sides and see only their own half.']}},
+ {t:4.67,ru:{k:'Кабуки',l:'Система сброса кабуки',h:'Экраны падают, и зал становится единым',p:['Экраны висят на кабуки: системе, которая сбрасывает полотно по команде с пульта.','В нужный момент экраны падают, и две половины оказываются одним пространством. Гости впервые видят друг друга и сцену в центре.']},
+       en:{k:'Kabuki',l:'Kabuki drop system',h:'The screens drop and the hall becomes one space',p:['The screens hang on a kabuki: a system that releases the fabric on a cue from the control desk.','At the right moment the screens drop and the two halves turn into one space. The guests see each other, and the stage in the centre, for the first time.']}},
+ {t:9.3,ru:{k:'Сцены',l:'Решение',h:'Две сцены в центре зала',p:['Две относительно небольшие сцены стоят друг напротив друга в центре зала, а подиум-трансформер соединяет их в одну.','Спикеры и артисты работают из центра на две стороны, и дальние ряды находятся не более чем в 50 метрах.']},
+       en:{k:'Stages',l:'The solution',h:'Two stages in the centre of the hall',p:['Two fairly small stages face each other in the centre of the hall, and a transforming catwalk joins them into one.','Speakers and artists work from the centre to both sides, and the far rows are no more than 50 metres away.']}},
+ {t:18.9,ru:{k:'Подиум',l:'Подиум-трансформер',h:'Подиум раздвигается и уходит в сцены',p:['Во второй части мероприятия подиум оперативно раздвигается и становится частью сцен.','Одна сцена остаётся спикерам, вторая артистам.']},
+       en:{k:'Catwalk',l:'Transforming catwalk',h:'The catwalk splits and slides into the stages',p:['In the second part of the event the catwalk quickly splits and becomes part of the stages.','One stage stays with the speakers, the other goes to the artists.']}},
+ {t:35.6,ru:{k:'Смена',l:'По ходу вечера',h:'Зал меняется вместе с программой',p:['Вместе с подиумом меняются контент на экранах и свет. Когда нужно, подиум собирается обратно.','Одна и та же площадка за вечер проходит несколько состояний, и каждое из них видно заранее, ещё до монтажа.']},
+       en:{k:'Change',l:'During the evening',h:'The hall changes with the programme',p:['The screen content and the lighting change together with the catwalk. When needed, the catwalk comes back together.','The same venue goes through several states in one evening, and each of them can be seen in advance, before load-in.']}},
+ {t:53.5,ru:{k:'Гости',l:'Обзор',h:'Сцену видно с любого стола',p:['LED-полотна экранов идут по всему залу. Все участники хорошо видят то, что происходит на сценах, где бы ни стоял их стол.']},
        en:{k:'Guests',l:'Sightlines',h:'The stage is visible from every table',p:['LED screens run along the whole hall. Every guest can clearly see what is happening on the stages, wherever their table is.']}},
- {t:69.5,ru:{k:'Техника',l:'Технические зоны',h:'Пультовая не занимает места гостей',p:['Пультовая и другие технические зоны встроены в один из торцов зала. Они не стоят среди гостей, а пультовая при этом находится на предельно комфортном расстоянии от сцены, в районе 50 метров.','Проект делался в очень сжатые сроки: от инспекции площадки до заезда на монтаж прошло чуть больше трёх недель.']},
-       en:{k:'Tech',l:'Technical areas',h:'The control desk takes no guest space',p:['The control desk and the other technical areas are built into one end of the hall. They do not sit among the guests, while the desk stays at a very comfortable distance from the stage, around 50 metres.','The project was done on a very tight schedule: a little over three weeks from the site inspection to load-in.']}},
+ {t:69.5,ru:{k:'Техника',l:'Технические зоны',h:'Пультовая не занимает места гостей',p:['Пультовая и другие технические зоны встроены в один из торцов зала. Они не стоят среди гостей, а пультовая при этом находится на комфортном расстоянии от сцены, в районе 50 метров.']},
+       en:{k:'Tech',l:'Technical areas',h:'The control desk takes no guest space',p:['The control desk and the other technical areas are built into one end of the hall. They do not sit among the guests, while the desk stays at a comfortable distance from the stage, around 50 metres.']}},
  {t:77.4,ru:{k:'Схема',l:'Схема зала',h:'От сцены к схеме',p:['Камера поднимается над залом, и он превращается в схему рассадки. На ней отмечены столы: с каждого можно посмотреть, как видно сцену.']},
        en:{k:'Plan',l:'Hall plan',h:'From the stage to the plan',p:['The camera rises above the hall and it turns into the seating plan. Tables are marked on it: from each one you can check the view of the stage.']}}
 ];
@@ -172,40 +185,75 @@ function lang(){return (document.documentElement.lang||'ru').slice(0,2)==='en'?'
 function tt(k){return T[lang()][k]}
 
 /* ---------- плеер из отрезков ---------- */
-var V=[$('v0'),$('v1')],act=0,seg=-1,mode='film',ch=-1,cur=null,ended=false,drag=false;
+var V=[$('v0'),$('v1')],act=0,seg=-1,mode='film',ch=-1,cur=null,ended=false,drag=false,pos=null,wantSeg=-1;
 function A(){return V[act]}function B(){return V[1-act]}
-function gt(){return seg<0?0:Math.min(TOTAL,seg*SEG+(A().currentTime||0))}
-function prep(v,i){if(i>=N){v.removeAttribute('data-i');return}if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
+function gt(){if(pos!=null)return pos;return seg<0?0:Math.min(TOTAL,seg*SEG+(A().currentTime||0))}
+function setCT(v,o){if(v.readyState<1||v.seeking){v._w=o;return}v._w=null;try{v.currentTime=o}catch(e){}}
+function loadAt(v,i,o,cb){v._cb=cb||null;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v._w=o;v.src=src(i);v.load()}else setCT(v,o)}
+function prep(v,i){v._cb=null;v._w=null;if(i>=N)return;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
+V.forEach(function(v){
+  function flush(){if(v._w!=null&&v.readyState>=1&&!v.seeking){var w=v._w;v._w=null;try{v.currentTime=w}catch(e){}return true}return false}
+  v.addEventListener('loadedmetadata',flush);
+  v.addEventListener('seeked',function(){if(flush())return;if(v._cb){var c=v._cb;v._cb=null;c()}});
+});
+/* перейти ко времени t. Внутри текущего отрезка просто перемотка; в другой отрезок грузим в скрытый тег и меняем местами, когда кадр готов */
 function seek(t,play){
-  t=Math.max(0,Math.min(TOTAL-0.05,t));ended=false;
-  var i=Math.min(N-1,Math.floor(t/SEG)),o=t-i*SEG,a=A();
-  if(a.getAttribute('data-i')===String(i)&&a.readyState>0){a.currentTime=o}
-  else{a.setAttribute('data-i',i);a.src=src(i);a.load();a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);try{a.currentTime=o}catch(e){}})}
-  seg=i;prep(B(),i+1);
-  if(play)start();
+  t=Math.max(0,Math.min(TOTAL-0.05,t));ended=false;pos=t;playWant=false;
+  var i=Math.min(N-1,Math.floor(t/SEG)),o=Math.max(0.01,t-i*SEG),a=A(),b=B();wantSeg=i;
+  if(seg===i&&a.getAttribute('data-i')===String(i)){b._cb=null;setCT(a,o);if(play)start();return}
+  if(seg<0){seg=i;a.setAttribute('data-i',i);a._w=o;a.src=src(i);a.load();prep(b,i+1);if(play)start();return}
+  loadAt(b,i,o,function(){if(wantSeg!==i)return;b.classList.add('on');a.classList.remove('on');a.pause();act=1-act;seg=i;prep(a,i+1);if(play||playWant){playWant=false;start()}else icon()});
 }
-function start(){var p=A().play();if(p&&p.catch)p.catch(function(){$('big').hidden=false});}
+var playWant=false;
+function start(){ended=false;if(B()._cb&&wantSeg!==seg){playWant=true;return}var a=A();function go(){pos=null;var p=a.play();if(p&&p.catch)p.catch(function(){if(mode==='film')$('big').hidden=false})}
+  if(a._w!=null||a.seeking){a._cb=go}else go()}
 function next(){
   if(seg+1>=N){ended=true;toPlan();return}
-  var a=A(),b=B();seg++;act=1-act;
-  b.currentTime=0;var p=b.play();if(p&&p.catch)p.catch(function(){});
+  var a=A(),b=B();seg++;act=1-act;wantSeg=seg;
+  try{b.currentTime=0}catch(e){}var p=b.play();if(p&&p.catch)p.catch(function(){});
   b.classList.add('on');a.classList.remove('on');a.pause();
   prep(a,seg+1);
 }
 V.forEach(function(v){v.addEventListener('ended',function(){if(v===A())next()});v.addEventListener('playing',function(){$('big').hidden=true;icon()});v.addEventListener('pause',icon)});
 function playing(){return !A().paused&&!ended}
+function stop(){if(pos==null)pos=gt();A().pause();icon()}
 function icon(){$('pp').innerHTML=playing()?'<svg viewBox="0 0 24 24"><path d="M5 3h5v18H5zM14 3h5v18h-5z"/></svg>':'<svg viewBox="0 0 24 24"><path d="M6 3l15 9-15 9z"/></svg>'}
-$('pp').addEventListener('click',function(){if(mode!=='film'){toFilm(ended?0:gt());return}if(ended){seek(0,true);return}if(playing())A().pause();else start()});
+$('pp').addEventListener('click',function(){if(mode!=='film'){toFilm(0,true);return}if(ended){seek(0,true);return}if(playing())stop();else start()});
 $('big').addEventListener('click',function(){$('big').hidden=true;start()});
-$('Lfilm').addEventListener('click',function(){if(playing())A().pause();else start()});
+$('Lfilm').addEventListener('click',function(){if(playing())stop();else start()});
+
+/* ---------- прокрутка: колесо и палец двигают фильм вручную ---------- */
+function scrub(d){var t=gt()+d;if(t>=TOTAL-0.06&&d>0){toPlan();return}seek(t,false)}
+var wAcc=0,wT=0,pAcc=0,pT=0;
+window.addEventListener('wheel',function(e){
+  if(e.target.closest&&e.target.closest('#lng'))return;
+  var pin=e.target.closest&&e.target.closest('#pin');
+  var dy=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1),now=Date.now();
+  if(mode==='view')return;
+  if(mode==='plan'){if(pin&&pin.scrollHeight>pin.clientHeight+4)return;e.preventDefault();if(now-pT>500)pAcc=0;pT=now;if(dy<0){pAcc-=dy;if(pAcc>150){pAcc=0;toFilm(TOTAL-0.4,false)}}return}
+  e.preventDefault();
+  if(playing()){if(now-wT>450)wAcc=0;wT=now;wAcc+=Math.abs(dy);if(wAcc<140)return;wAcc=0;stop();return}
+  scrub(dy*0.012);
+},{passive:false});
+var ts=null;
+document.addEventListener('touchstart',function(e){ts=null;var t=e.target;if(!t.closest||e.touches.length!==1)return;if(t.closest('#rail,#lng,button,a,nav,header'))return;
+  var pin=$('pin');if(t.closest('#pin')&&pin.scrollHeight>pin.clientHeight+4)return;if(mode==='view')return;if(mode==='plan'&&t.closest('#planwrap'))return;
+  ts={y:e.touches[0].clientY,x:e.touches[0].clientX,acc:0,dir:0}},{passive:true});
+document.addEventListener('touchmove',function(e){if(!ts)return;var c=e.touches[0],d=ts.y-c.clientY,dx=c.clientX-ts.x;
+  if(!ts.dir){if(Math.abs(d)<6&&Math.abs(dx)<6)return;ts.dir=Math.abs(d)>=Math.abs(dx)?1:2}
+  if(ts.dir!==1)return;e.preventDefault();ts.y=c.clientY;
+  if(mode==='plan'){ts.acc-=d;if(ts.acc>70){ts=null;toFilm(TOTAL-0.4,false)}return}
+  if(playing()){ts.acc+=Math.abs(d);if(ts.acc<28)return;stop()}
+  scrub(d*0.045)},{passive:false});
+document.addEventListener('touchend',function(){ts=null});
 
 /* ---------- шкала ---------- */
 function buildRail(){var r=$('rail');r.querySelectorAll('s').forEach(function(e){e.remove()});CH.forEach(function(c,i){var s=document.createElement('s');s.style.left=(c.t/TOTAL*100)+'%';s.title=c[lang()].k;r.appendChild(s)})}
 function fmt(t){t=Math.floor(t);return Math.floor(t/60)+':'+(t%60<10?'0':'')+(t%60)}
 function railT(e){var b=$('rail').getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-b.left)/b.width))*TOTAL}
-$('rail').addEventListener('pointerdown',function(e){drag=true;$('rail').setPointerCapture(e.pointerId);if(mode!=='film')toFilm(railT(e),true);else seek(railT(e))});
-$('rail').addEventListener('pointermove',function(e){if(drag)seek(railT(e))});
-$('rail').addEventListener('pointerup',function(){if(drag){drag=false;start()}});
+var wasPlay=true;$('rail').addEventListener('pointerdown',function(e){drag=true;$('rail').setPointerCapture(e.pointerId);if(mode!=='film'){wasPlay=true;toFilm(railT(e),false)}else{wasPlay=playing();stop();seek(railT(e),false)}});
+$('rail').addEventListener('pointermove',function(e){if(drag)seek(railT(e),false)});
+$('rail').addEventListener('pointerup',function(){if(drag){drag=false;if(wasPlay)start()}});
 function tick(){
   var t=mode==='film'?gt():TOTAL,p=t/TOTAL*100;
   $('fill').style.width=p+'%';$('knob').style.left=p+'%';$('tm').textContent=fmt(t)+' / '+fmt(TOTAL);
@@ -227,30 +275,32 @@ function panel(now){var p=$('pin');clearTimeout(swT);if(now){p.innerHTML=html();
 $('pin').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.a==='plan')toPlan();else if(b.dataset.a==='film')toFilm(0,true);else if(b.dataset.t)openView(+b.dataset.t)});
 
 function ticks(){var L=lang(),o=$('ticks');o.innerHTML=CH.map(function(c,i){return '<li class="'+(mode==='film'&&i===ch?'on':'')+'"><button data-c="'+i+'"><span>'+esc(c[L].k)+'</span></button></li>'}).join('')+'<li class="'+(mode!=='film'?'on':'')+'"><button data-c="plan"><span>'+tt('planH')+'</span></button></li>'}
-$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.c==='plan')toPlan();else toFilm(CH[+b.dataset.c].t+0.02,true)});
+$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.c==='plan')toPlan();else toFilm(CH[+b.dataset.c].t+0.05,true)});
 
 /* ---------- режимы ---------- */
 function show(id){['Lfilm','Lplan','Lview'].forEach(function(x){$(x).classList.toggle('on',x===id)});document.body.className=mode}
-function toFilm(t,play){mode='film';ch=-1;show('Lfilm');seek(t||0,play!==false)}
-function toPlan(){A().pause();mode='plan';cur=null;show('Lplan');marks();panel();icon();if(small){var w=$('planwrap');requestAnimationFrame(function(){w.scrollLeft=w.scrollWidth*0.55})}}
+function toFilm(t,play){mode='film';ch=-1;show('Lfilm');seek(t||0,play!==false);icon()}
+function toPlan(){A().pause();$('big').hidden=true;pos=null;mode='plan';cur=null;show('Lplan');marks();panel();icon();if(small){var w=$('planwrap');requestAnimationFrame(function(){w.scrollLeft=w.scrollWidth*0.55})}}
 function openView(n){cur=TB.filter(function(b){return b.n===n})[0];if(!cur)return;mode='view';$('vImg').src=cur.img;show('Lview');panel()}
 function marks(){$('svg').innerHTML=TB.map(function(b){return '<g class="mk'+(cur&&cur.n===b.n?' on':'')+'" data-t="'+b.n+'"><circle class="h" cx="'+b.x+'" cy="'+b.y+'" r="46"/><circle class="r" cx="'+b.x+'" cy="'+b.y+'" r="32"/><text x="'+b.x+'" y="'+(b.y+2)+'">'+b.n+'</text></g>'}).join('')}
 $('svg').addEventListener('click',function(e){var g=e.target.closest('.mk');if(g)openView(+g.dataset.t)});
 $('Lview').addEventListener('click',function(){toPlan()});
 $('vImg').addEventListener('error',function(){if(mode==='view')toPlan()});
-document.addEventListener('keydown',function(e){if(e.key===' '&&mode==='film'){e.preventDefault();if(playing())A().pause();else start()}if(e.key==='ArrowRight'&&mode==='film')seek(gt()+5);if(e.key==='ArrowLeft'&&mode==='film')seek(gt()-5);if(e.key==='Escape'&&mode==='view')toPlan()});
+document.addEventListener('keydown',function(e){if(e.key===' '&&mode==='film'){e.preventDefault();if(playing())stop();else start()}if((e.key==='ArrowRight'||e.key==='ArrowDown')&&mode==='film'){var pl=playing();seek(gt()+5,pl)}if((e.key==='ArrowLeft'||e.key==='ArrowUp')&&mode==='film'){var pl2=playing();seek(gt()-5,pl2)}if(e.key==='Escape'&&mode==='view')toPlan()});
 
 /* ---------- язык и запуск ---------- */
-function applyLang(){document.title=lang()==='ru'?'Конференция на 1100 гостей: интерактивная презентация':'Conference, 1100 guests: interactive presentation';$('lng').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});buildRail();panel(true)}
+function applyLang(){document.title=lang()==='ru'?'Конференция на 1100 гостей: интерактивная презентация':'Conference, 1100 guests: interactive presentation';$('lsd').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});$('lsc').textContent=lang().toUpperCase();$('home').href='https://pravdukhin.com/?lang='+lang()+'#presentation';buildRail();panel(true)}
 (function(){var q=null;try{q=new URLSearchParams(location.search).get('lang')}catch(e){}
   if(q!=='ru'&&q!=='en'){try{q=localStorage.getItem('lang')}catch(e){}}
   if(q!=='ru'&&q!=='en')q=/^ru\b/i.test(navigator.language||'')?'ru':'en';
   document.documentElement.lang=q})();
-$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;document.documentElement.lang=b.dataset.l;try{localStorage.setItem('lang',b.dataset.l)}catch(x){}});
+function lsOpen(o){$('lsd').classList.toggle('open',o);$('lsw').setAttribute('aria-expanded',o?'true':'false')}
+$('lng').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.id==='lsw'){lsOpen(!$('lsd').classList.contains('open'));return}if(b.dataset.l){document.documentElement.lang=b.dataset.l;try{document.dispatchEvent(new CustomEvent('sitelang',{bubbles:true,detail:{lang:b.dataset.l}}))}catch(x){}try{localStorage.setItem('lang',b.dataset.l)}catch(x){}lsOpen(false)}});
+document.addEventListener('pointerdown',function(e){if(!e.target.closest||!e.target.closest('#lng'))lsOpen(false)});
 new MutationObserver(applyLang).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-window.addEventListener('load',function(){setTimeout(function(){if(!window.SITE_NAV)$('lng').hidden=false},600)});
-ch=0;applyLang();icon();seek(0,true);requestAnimationFrame(tick);
-if(location.hash==='#plan')toPlan();
+ch=0;applyLang();icon();
+if(location.hash==='#plan'){seek(TOTAL-0.4,false);toPlan()}else seek(0,true);
+requestAnimationFrame(tick);
 })();
 </script>
 <script src="https://concept.pravdukhin.com/v8/nav.js?v=20" data-v="D" data-page="pres" data-main="https://pravdukhin.com/" data-scan="https://pravdukhin.com/3d-venue-scanning/"></script>
