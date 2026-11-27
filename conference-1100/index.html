@@ -206,12 +206,11 @@ var T={ru:{steps:['3D · репетиция','3D · мероприятие','С�
        en:{steps:['3D · rehearsal','3D · event','Plan'],planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
 /* столы с видами: координаты на плане 2800x632 поставлены по догадке, сверить с Юрием */
 var TB=[
- {n:1,x:2002,y:319,img:'media/tv1.jpg',ru:'В центре зала',en:'Centre of the hall'},
- {n:2,x:2054,y:445,img:'media/tv2.jpg',ru:'Сбоку',en:'At the side'},
- {n:3,x:2251,y:445,img:'media/tv3.jpg',ru:'В углу зала',en:'Corner of the hall'},
- {n:4,x:1956,y:129,img:'media/tv4.jpg',ru:'У стены',en:'By the wall'},
- {n:5,x:1698,y:507,img:'media/tv5.jpg',ru:'У центральной сцены',en:'By the centre stage'},
- {n:6,x:1579,y:381,img:'media/tv6.jpg',ru:'У подиума',en:'By the catwalk'}
+ {n:1,x:2134,y:318,img:'media/tv1.jpg',ru:'Стол B97',en:'Table B97'},
+ {n:2,x:2189,y:190,img:'media/tv2.jpg',ru:'Стол B76',en:'Table B76'},
+ {n:3,x:637,y:448,img:'media/tv3.jpg',ru:'Стол A51',en:'Table A51'},
+ {n:4,x:960,y:448,img:'media/tv4.jpg',ru:'Стол A56',en:'Table A56'},
+ {n:5,x:1801,y:190,img:'media/tv5.jpg',ru:'Стол B70',en:'Table B70'}
 ];
 
 function lang(){return (document.documentElement.lang||'ru').slice(0,2)==='en'?'en':'ru'}
@@ -308,7 +307,7 @@ function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function html(){
   var L=lang();
   if(mode==='film'){var c=CH[ch<0?0:ch][L];return '<p class="lbl">'+esc(c.l)+'</p><h2>'+esc(c.h)+'</h2>'+c.p.map(function(x){return '<p>'+esc(x)+'</p>'}).join('')+'<button class="btn" data-a="plan">'+tt('toPlan')+' ↓</button>'}
-  if(mode==='view'&&cur){return '<p class="lbl">'+tt('viewL')+'</p><h2>'+tt('tbl')+' '+cur.n+'</h2><p>'+esc(cur[L])+'</p><button class="btn" data-a="plan">'+tt('back')+'</button>'}
+  if(mode==='view'&&cur){return '<p class="lbl">'+tt('viewL')+'</p><h2>'+esc(cur[L])+'</h2><button class="btn" data-a="plan">'+tt('back')+'</button>'}
   return '<p class="lbl">'+tt('planL')+'</p><h2>'+tt('planH')+'</h2><p>'+tt('planP')+'</p><ul class="tl">'+TB.map(function(b){return '<li><button data-t="'+b.n+'"><b>'+b.n+'</b>'+esc(b[L])+'</button></li>'}).join('')+'</ul><button class="btn" data-a="film">'+tt('again')+'</button><p class="note">'+tt('note')+'</p>';
 }
 var swT=0;
