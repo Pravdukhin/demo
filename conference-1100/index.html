@@ -145,7 +145,7 @@ button{font:inherit;color:inherit}
 <body>
 
 <div class="stage">
-  <div class="layer L-film on" id="Lfilm"><video id="v0" class="on" muted playsinline preload="auto" poster="media/poster.jpg"></video><video id="v1" muted playsinline preload="auto" poster="media/poster.jpg"></video></div>
+  <div class="layer L-film on" id="Lfilm"><video id="v0" class="on" muted playsinline preload="auto" poster="media/poster.jpg"></video><video id="v1" muted playsinline preload="auto"></video></div>
   <div class="layer L-plan" id="Lplan"><div class="planwrap" id="planwrap"><div class="planbox"><img id="planImg" src="media/plan.webp" alt="" width="2800" height="632"><svg id="svg" viewBox="0 0 2800 632" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div>
   <div class="layer L-view" id="Lview"><img id="vImg" alt=""></div>
 </div>
@@ -162,15 +162,24 @@ button{font:inherit;color:inherit}
 (function(){
 'use strict';
 var $=function(i){return document.getElementById(i)};
-var N=11,SEG=8,TOTAL=87.375;
+var TOTAL=87.375;
 var small=matchMedia('(max-width:760px)').matches;
+/* телефон: одно видео целиком. Компьютер: три куска до 25 МБ (лимит GitHub), разрез по стыкам проходов */
+var ST=small?[0]:[0,28,1285/24],N=ST.length;
+function segOf(t){var i=N-1;while(i>0&&t<ST[i])i--;return i}
+function segLen(i){return (i+1<N?ST[i+1]:TOTAL)-ST[i]}
 var BL=[];
-function url(i){return 'media/'+(small?'m':'f')+(i<10?'0':'')+i+'.mp4'}
+function url(i){return small?'media/film_m.mp4':'media/d'+i+'.mp4'}
 function src(i){return BL[i]||url(i)}
-/* отрезки по одному скачиваются в память: прокрутка не ждёт сеть */
 var pfOn=false;
-function ldShow(){var c='rgba(232,236,241,.3)',g=[],k;for(k=0;k<N;k++){var x0=(k*SEG/TOTAL*100).toFixed(2),x1=(Math.min(TOTAL,(k+1)*SEG)/TOTAL*100).toFixed(2),cc=BL[k]?c:'transparent';g.push(cc+' '+x0+'%',cc+' '+x1+'%')}$('ld').style.background='linear-gradient(90deg,'+g.join(',')+')'}
-function prefetch(){if(pfOn)return;pfOn=true;var order=[],c=Math.max(0,seg),k;for(k=0;k<N;k++)order.push((c+k)%N);
+function ldShow(){var c='rgba(232,236,241,.3)',R=[],k,g=[];
+  for(k=0;k<N;k++)if(BL[k])R.push([ST[k],ST[k]+segLen(k)]);
+  var v=V[act],r=v.buffered,i=+v.getAttribute('data-i');if(r&&!isNaN(i)&&!BL[i])for(k=0;k<r.length;k++)R.push([ST[i]+r.start(k),ST[i]+Math.min(segLen(i),r.end(k))]);
+  if(!R.length)return;R.sort(function(a,b){return a[0]-b[0]});
+  for(k=0;k<R.length;k++){if(k&&R[k][0]<R[k-1][1])R[k][0]=R[k-1][1];if(R[k][1]<=R[k][0])continue;var x0=(R[k][0]/TOTAL*100).toFixed(2),x1=(R[k][1]/TOTAL*100).toFixed(2);g.push('transparent '+x0+'%',c+' '+x0+'%',c+' '+x1+'%','transparent '+x1+'%')}
+  if(g.length)$('ld').style.background='linear-gradient(90deg,transparent 0%,'+g.join(',')+',transparent 100%)'}
+/* на компьютере куски по одному скачиваются в память: прокрутка не ждёт сеть */
+function prefetch(){if(pfOn||small)return;pfOn=true;var order=[],c=Math.max(0,seg),k;for(k=0;k<N;k++)order.push((c+k)%N);
   (function nx(){var i=order.shift();if(i==null)return;if(BL[i]){nx();return}
     fetch(url(i)).then(function(r){return r.ok?r.blob():null}).then(function(b){if(b){BL[i]=URL.createObjectURL(b);ldShow()}setTimeout(nx,60)}).catch(function(){setTimeout(nx,1500)})})()}
 
@@ -211,7 +220,7 @@ function tt(k){return T[lang()][k]}
 /* ---------- плеер из отрезков ---------- */
 var V=[$('v0'),$('v1')],act=0,seg=-1,mode='film',ch=-1,cur=null,ended=false,drag=false,pos=null,wantSeg=-1;
 function A(){return V[act]}function B(){return V[1-act]}
-function gt(){if(pos!=null)return pos;return seg<0?0:Math.min(TOTAL,seg*SEG+(A().currentTime||0))}
+function gt(){if(pos!=null)return pos;return seg<0?0:Math.min(TOTAL,ST[seg]+(A().currentTime||0))}
 function setCT(v,o){v._t=o;if(v.readyState<1||v.seeking){v._w=o;return}v._w=null;try{v.currentTime=o}catch(e){}}
 function loadAt(v,i,o,cb){v._cb=cb||null;v._keep=false;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v._w=o;v._t=o;v.src=src(i);v.load()}else{setCT(v,o);if(v.readyState>=2)prime(v)}}
 function prep(v,i){v._cb=null;v._w=null;v._t=0;v._keep=false;if(i>=N||i<0)return;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
@@ -219,7 +228,7 @@ function prep(v,i){v._cb=null;v._w=null;v._t=0;v._keep=false;if(i>=N||i<0)return
 function prime(v){var id=v.getAttribute('data-i');if(v._pr===id||!v.paused||v._keep)return;if(v!==A()&&!A().paused)return;v._pr=id;var p=v.play();
   if(p&&p.then)p.then(function(){if(v._keep)return;v.pause();if(v._t!=null){try{v.currentTime=v._t}catch(e){}}}).catch(function(){v._pr=null})}
 V.forEach(function(v){
-  v.addEventListener('loadeddata',function(){prime(v)});
+  v.addEventListener('loadeddata',function(){prime(v)});v.addEventListener('playing',function(){v.removeAttribute('poster')});v.addEventListener('progress',ldShow);v.addEventListener('timeupdate',ldShow);
   function flush(){if(v._w!=null&&v.readyState>=1&&!v.seeking){var w=v._w;v._w=null;try{v.currentTime=w}catch(e){}return true}return false}
   v.addEventListener('loadedmetadata',flush);
   v.addEventListener('seeked',function(){if(flush())return;if(v._cb){var c=v._cb;v._cb=null;c()}});
@@ -227,8 +236,8 @@ V.forEach(function(v){
 /* перейти ко времени t. Внутри текущего отрезка просто перемотка; в другой отрезок грузим в скрытый тег и меняем местами, когда кадр готов */
 function seek(t,play){
   t=Math.max(0,Math.min(TOTAL-0.05,t));ended=false;pos=t;playWant=false;
-  var i=Math.min(N-1,Math.floor(t/SEG)),o=Math.max(i===0?0.1:0.01,t-i*SEG),a=A(),b=B();wantSeg=i;
-  if(seg===i&&a.getAttribute('data-i')===String(i)){b._cb=null;setCT(a,o);if(play)start();else prep(b,(o<SEG/2&&i>0)?i-1:i+1);return}
+  var i=segOf(t),o=Math.max(0.02,t-ST[i]),a=A(),b=B();wantSeg=i;
+  if(seg===i&&a.getAttribute('data-i')===String(i)){b._cb=null;setCT(a,o);if(play)start();else prep(b,(o<segLen(i)/2&&i>0)?i-1:i+1);return}
   if(seg<0){seg=i;a.setAttribute('data-i',i);a._w=o;a._t=o;a.src=src(i);a.load();prep(b,i+1);if(play)start();return}
   loadAt(b,i,o,function(){if(wantSeg!==i)return;b.classList.add('on');a.classList.remove('on');a.pause();act=1-act;seg=i;prep(a,i+1);if(play||playWant){playWant=false;start()}else icon()});
 }
