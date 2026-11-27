@@ -68,12 +68,12 @@ button{font:inherit;color:inherit}
 /* главы справа */
 .ticks{position:fixed;z-index:6;right:var(--pad-r);top:50%;transform:translateY(-50%);list-style:none;margin:0;padding:0}
 .ticks::before{content:"";position:absolute;right:4px;top:10px;bottom:10px;width:1px;background:rgba(232,236,241,.42)}
-.ticks li button{appearance:none;background:none;border:0;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:7px 0;color:var(--ink-soft);font-size:13px;width:100%;text-shadow:0 1px 10px rgba(8,20,36,.95);opacity:.75}
+.ticks li{display:flex;justify-content:flex-end}
+.ticks li button{appearance:none;background:none;border:0;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:16px;padding:9px 0;color:var(--ink-soft);font:inherit;font-weight:400;font-size:15px;position:relative;text-shadow:0 1px 3px rgba(8,20,36,.95),0 0 14px rgba(8,20,36,.95),0 0 26px rgba(8,20,36,.8)}
 .ticks li button::after{content:"";width:9px;height:1px;background:rgba(232,236,241,.6)}
-.ticks li.on button{color:var(--ink);opacity:1}
-.ticks li.on button::after{width:18px;background:var(--amber);height:2px}
-.ticks li button span{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .25s}
-.ticks:hover li button span,.ticks li.on button span{max-width:260px}
+.ticks li.on button{color:var(--ink)}
+.ticks li.on button::before{content:"";position:absolute;right:0;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(8,20,36,.6),0 0 14px var(--amber-glow)}
+.ticks li.done button{color:var(--ink-soft);opacity:.8}
 
 /* схема */
 .L-plan{background:var(--night-deep);display:flex;align-items:center;justify-content:flex-end}
@@ -179,9 +179,9 @@ function ldShow(){var c='rgba(232,236,241,.3)',R=[],k,g=[];
   for(k=0;k<R.length;k++){if(k&&R[k][0]<R[k-1][1])R[k][0]=R[k-1][1];if(R[k][1]<=R[k][0])continue;var x0=(R[k][0]/TOTAL*100).toFixed(2),x1=(R[k][1]/TOTAL*100).toFixed(2);g.push('transparent '+x0+'%',c+' '+x0+'%',c+' '+x1+'%','transparent '+x1+'%')}
   if(g.length)$('ld').style.background='linear-gradient(90deg,transparent 0%,'+g.join(',')+',transparent 100%)'}
 /* на компьютере куски по одному скачиваются в память: прокрутка не ждёт сеть */
-function prefetch(){if(pfOn||small)return;pfOn=true;var order=[],c=Math.max(0,seg),k;for(k=0;k<N;k++)order.push((c+k)%N);
+function prefetch(){if(pfOn||small)return;pfOn=true;var order=[],c=Math.max(0,seg),k;for(k=1;k<=N;k++)order.push((c+k)%N);
   (function nx(){var i=order.shift();if(i==null)return;if(BL[i]){nx();return}
-    fetch(url(i)).then(function(r){return r.ok?r.blob():null}).then(function(b){if(b){BL[i]=URL.createObjectURL(b);ldShow()}setTimeout(nx,60)}).catch(function(){setTimeout(nx,1500)})})()}
+    fetch(url(i)).then(function(r){return r.ok?r.blob():null}).then(function(b){if(b){BL[i]=URL.createObjectURL(b);ldShow();var h=V[1-act];if(i===seg+1&&!h._cb&&h.getAttribute('data-i')!==String(i))prep(h,i)}setTimeout(nx,60)}).catch(function(){setTimeout(nx,1500)})})()}
 
 /* главы фильма: время начала, подпись на шкале, текст */
 var CH=[
@@ -202,8 +202,8 @@ var CH=[
  {t:77.4,ru:{k:'Схема',l:'Схема зала',h:'От сцены к схеме',p:['Камера поднимается над залом, и он превращается в схему рассадки. На ней отмечены столы: с каждого можно посмотреть, как видно сцену.']},
        en:{k:'Plan',l:'Hall plan',h:'From the stage to the plan',p:['The camera rises above the hall and it turns into the seating plan. Tables are marked on it: from each one you can check the view of the stage.']}}
 ];
-var T={ru:{planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на отметку на схеме или на строку в списке: откроется вид на сцену с этого стола.',again:'Смотреть 3D сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад в 3D',swView:'Назад к схеме'},
-       en:{planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
+var T={ru:{steps:['3D · репетиция','3D · мероприятие','Схема'],planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на отметку на схеме или на строку в списке: откроется вид на сцену с этого стола.',again:'Смотреть 3D сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад в 3D',swView:'Назад к схеме'},
+       en:{steps:['3D · rehearsal','3D · event','Plan'],planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
 /* столы с видами: координаты на плане 2800x632 поставлены по догадке, сверить с Юрием */
 var TB=[
  {n:1,x:2002,y:319,img:'media/tv1.jpg',ru:'В центре зала',en:'Centre of the hall'},
@@ -223,7 +223,7 @@ function A(){return V[act]}function B(){return V[1-act]}
 function gt(){if(pos!=null)return pos;return seg<0?0:Math.min(TOTAL,ST[seg]+(A().currentTime||0))}
 function setCT(v,o){v._t=o;if(v.readyState<1||v.seeking){v._w=o;return}v._w=null;try{v.currentTime=o}catch(e){}}
 function loadAt(v,i,o,cb){v._cb=cb||null;v._keep=false;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v._w=o;v._t=o;v.src=src(i);v.load()}else{setCT(v,o);if(v.readyState>=2)prime(v)}}
-function prep(v,i){v._cb=null;v._w=null;v._t=0;v._keep=false;if(i>=N||i<0)return;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
+function prep(v,i){v._cb=null;v._w=null;v._t=0;v._keep=false;if(i>=N||i<0)return;if(!small&&!BL[i]&&(!pfOn||!V[act].paused))return;if(v.getAttribute('data-i')!==String(i)){v.setAttribute('data-i',i);v.src=src(i);v.load()}}
 /* на iPhone кадр ни разу не игравшего видео не рисуется: коротко запускаем и сразу ставим на паузу */
 function prime(v){var id=v.getAttribute('data-i');if(v._pr===id||!v.paused||v._keep)return;if(v!==A()&&!A().paused)return;v._pr=id;var p=v.play();
   if(p&&p.then)p.then(function(){if(v._keep)return;v.pause();if(v._t!=null){try{v.currentTime=v._t}catch(e){}}}).catch(function(){v._pr=null})}
@@ -247,7 +247,7 @@ function start(){ended=false;if(B()._cb&&wantSeg!==seg){playWant=true;return}var
 function next(){
   if(seg+1>=N){ended=true;toPlan();return}
   var a=A(),b=B();seg++;act=1-act;wantSeg=seg;b._keep=true;a._keep=false;
-  try{b.currentTime=0}catch(e){}
+  if(b.getAttribute('data-i')!==String(seg)){b.setAttribute('data-i',seg);b.src=src(seg);b.load()}else{try{b.currentTime=0}catch(e){}}
   var done=false;function sw(){if(done)return;done=true;b.removeEventListener('timeupdate',tu);if(A()!==b)return;b.classList.add('on');a.classList.remove('on');a.pause();if(!a._cb)prep(a,seg+1)}
   function tu(){if(b.currentTime>0.02)sw()}
   b.addEventListener('timeupdate',tu);if(b.requestVideoFrameCallback)b.requestVideoFrameCallback(function(){sw()});setTimeout(sw,700);
@@ -277,11 +277,13 @@ window.addEventListener('wheel',function(e){
   scrub(dy*0.012);
 },{passive:false});
 var ts=null;
-document.addEventListener('touchstart',function(e){ts=null;var t=e.target;if(!t.closest||e.touches.length!==1||mode!=='film')return;if(t.closest('#rail,#lng,#pp,#swh,#big,a,nav,header,[class*=pvn]'))return;
-  ts={y:e.touches[0].clientY,x:e.touches[0].clientX,acc:0,dir:0}},{passive:true});
+document.addEventListener('touchstart',function(e){ts=null;var t=e.target;if(!t.closest||e.touches.length!==1)return;if(t.closest('#rail,#lng,#pp,#swh,#big,a,nav,header,[class*=pvn]'))return;
+  ts={y:e.touches[0].clientY,x:e.touches[0].clientX,acc:0,dir:0,top:!t.closest('#pin')||$('pin').scrollTop<=0}},{passive:true});
 document.addEventListener('touchmove',function(e){if(!ts)return;var c=e.touches[0],d=ts.y-c.clientY,dx=c.clientX-ts.x;
   if(!ts.dir){if(Math.abs(d)<6&&Math.abs(dx)<6)return;ts.dir=Math.abs(d)>=Math.abs(dx)?1:2}
-  if(ts.dir!==1)return;e.preventDefault();ts.y=c.clientY;
+  if(ts.dir!==1)return;
+  if(mode!=='film'){if(!ts.top||d>0)return;e.preventDefault();if(-d>70){ts=null;if(mode==='view')toPlan();else toFilm(TOTAL-0.4,false)}return}
+  e.preventDefault();ts.y=c.clientY;
   if(playing()){ts.acc+=Math.abs(d);if(ts.acc<28)return;stop()}
   scrub(d*0.045)},{passive:false});
 document.addEventListener('touchend',function(){ts=null});
@@ -297,7 +299,7 @@ function tick(){
   var t=mode==='film'?gt():TOTAL,p=t/TOTAL*100;
   $('fill').style.width=p+'%';$('knob').style.left=p+'%';$('tm').textContent=fmt(t)+' / '+fmt(TOTAL);
   var ss=$('rail').querySelectorAll('s');for(var i=0;i<ss.length;i++)ss[i].classList.toggle('done',CH[i].t<=t);
-  if(mode==='film'){var k=0;for(var j=0;j<CH.length;j++)if(t>=CH[j].t)k=j;if(k!==ch){ch=k;panel()}}
+  if(mode==='film'){var k=0;for(var j=0;j<CH.length;j++)if(t>=CH[j].t)k=j;if(k!==ch){ch=k;panel()}}ticks();
   requestAnimationFrame(tick);
 }
 
@@ -313,8 +315,9 @@ var swT=0;
 function panel(now){var p=$('pin');clearTimeout(swT);if(now){p.innerHTML=html();p.classList.remove('sw');ticks();return}p.classList.add('sw');swT=setTimeout(function(){p.innerHTML=html();p.scrollTop=0;p.classList.remove('sw')},300);ticks()}
 $('pin').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.a==='plan')toPlan();else if(b.dataset.a==='film')toFilm(0,true);else if(b.dataset.t)openView(+b.dataset.t)});
 
-function ticks(){var L=lang(),o=$('ticks');o.innerHTML=CH.map(function(c,i){return '<li class="'+(mode==='film'&&i===ch?'on':'')+'"><button data-c="'+i+'"><span>'+esc(c[L].k)+'</span></button></li>'}).join('')+'<li class="'+(mode!=='film'?'on':'')+'"><button data-c="plan"><span>'+tt('planH')+'</span></button></li>'}
-$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.c==='plan')toPlan();else toFilm(CH[+b.dataset.c].t+0.05,true)});
+var EV=53.5; /* с этого времени зал с гостями */
+function ticks(){var o=$('ticks'),k=mode!=='film'?2:(gt()>=EV?1:0);if(o._k===k&&o._l===lang())return;o._k=k;o._l=lang();o.innerHTML=tt('steps').map(function(x,i){return '<li class="'+(i===k?'on':i<k?'done':'')+'"><button data-c="'+i+'">'+esc(x)+'</button></li>'}).join('')}
+$('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var c=+b.dataset.c;if(c===2)toPlan();else toFilm(c?EV+0.05:0,true)});
 
 /* ---------- режимы ---------- */
 function show(id){['Lfilm','Lplan','Lview'].forEach(function(x){$(x).classList.toggle('on',x===id)});document.body.className=mode;swh()}
