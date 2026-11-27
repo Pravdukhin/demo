@@ -37,6 +37,7 @@ button{font:inherit;color:inherit}
 .L-film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--night-deep);opacity:0}
 .L-film video.on{opacity:1}
 .L-view img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.L-pass video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--night-deep)}
 .shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(8,20,36,.94) 0,rgba(8,20,36,.82) calc(var(--colw) * .72),rgba(8,20,36,0) calc(var(--colw) + 160px)),linear-gradient(180deg,rgba(8,20,36,.55) 0,rgba(8,20,36,0) 130px)}
 
 .panel{position:fixed;z-index:5;left:var(--pad-l);top:calc(var(--top) + 24px);bottom:70px;width:calc(var(--colw) - 20px);display:flex;flex-direction:column;justify-content:center;pointer-events:none}
@@ -114,7 +115,7 @@ button{font:inherit;color:inherit}
   :root{--colw:100vw;--vh:56.25vw;--vt:calc(var(--top) + env(safe-area-inset-top,0px))}
   .shade{background:linear-gradient(180deg,rgba(8,20,36,.55) 0,rgba(8,20,36,0) 110px)}
   .stage{touch-action:none}
-  .L-film video,.L-view img{inset:auto;left:0;right:0;top:var(--vt);height:var(--vh);object-fit:cover}
+  .L-film video,.L-view img,.L-pass video{inset:auto;left:0;right:0;top:var(--vt);height:var(--vh);object-fit:cover}
   .panel{left:0;right:0;width:auto;top:calc(var(--vt) + var(--vh));bottom:calc(64px + env(safe-area-inset-bottom,0px));display:block}
   .pin{height:100%;padding:52px var(--pad-r) 8px var(--pad-l)}
   body:not(.plan):not(.view) .pin{overflow:hidden;touch-action:none}
@@ -148,6 +149,7 @@ button{font:inherit;color:inherit}
   <div class="layer L-film on" id="Lfilm"><video id="v0" class="on" muted playsinline preload="auto" poster="media/poster.jpg"></video><video id="v1" muted playsinline preload="auto"></video></div>
   <div class="layer L-plan" id="Lplan"><div class="planwrap" id="planwrap"><div class="planbox"><img id="planImg" src="media/plan.webp" alt="" width="2800" height="632"><svg id="svg" viewBox="0 0 2800 632" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div>
   <div class="layer L-view" id="Lview"><img id="vImg" alt=""></div>
+  <div class="layer L-pass" id="Lpass"><video id="pv" muted playsinline preload="auto"></video></div>
 </div>
 <div class="shade"></div>
 
@@ -208,9 +210,9 @@ var T={ru:{steps:['3D · репетиция','3D · мероприятие','С�
 var TB=[
  {n:1,x:2134,y:318,img:'media/n1.jpg',ru:'Стол B97',en:'Table B97'},
  {n:2,x:2189,y:190,img:'media/n2.jpg',ru:'Стол B76',en:'Table B76'},
- {n:3,x:637,y:448,img:'media/n3.jpg',ru:'Стол A51',en:'Table A51'},
+ {n:3,x:637,y:448,img:'media/n3b.jpg',ru:'Стол A51',en:'Table A51'},
  {n:4,x:960,y:448,img:'media/n4.jpg',ru:'Стол A56',en:'Table A56'},
- {n:5,x:1801,y:190,img:'media/n5.jpg',ru:'Стол B70',en:'Table B70'},
+ {n:5,x:1801,y:190,img:'media/n5b.jpg',pass:'media/p5.mp4',back:'media/p5r.mp4',ru:'Стол B70',en:'Table B70'},
  {n:6,x:1616,y:319,img:'media/n6.jpg',ru:'Стол B89',en:'Table B89'},
  {n:7,x:905,y:319,img:'media/n7.jpg',ru:'Стол A33',en:'Table A33'},
  {n:8,x:729,y:125,img:'media/n8.jpg',ru:'Стол A1',en:'Table A1'},
@@ -262,7 +264,7 @@ function stop(){if(pos==null)pos=gt();A()._keep=false;A().pause();icon()}
 function icon(){$('pp').innerHTML=playing()?'<svg viewBox="0 0 24 24"><path d="M5 3h5v18H5zM14 3h5v18h-5z"/></svg>':'<svg viewBox="0 0 24 24"><path d="M6 3l15 9-15 9z"/></svg>'}
 $('pp').addEventListener('click',function(){if(mode!=='film'){toFilm(0,true);return}if(ended){seek(0,true);return}if(playing())stop();else start()});
 $('big').addEventListener('click',function(){$('big').hidden=true;start()});
-$('swh').addEventListener('click',function(){if(mode==='view')toPlan();else if(mode==='plan')toFilm(TOTAL-0.4,false);else if(playing())stop();else start()});
+$('swh').addEventListener('click',function(){if(mode==='view')back();else if(mode==='plan')toFilm(TOTAL-0.4,false);else if(playing())stop();else start()});
 function swh(){var h=$('swh');h.className='swh '+(mode==='film'?'up':'pl dn');h.querySelector('span').textContent=tt(mode==='view'?'swView':mode==='plan'?'swPlan':'sw')}
 $('Lfilm').addEventListener('click',function(){if(playing())stop();else start()});
 
@@ -285,7 +287,7 @@ document.addEventListener('touchstart',function(e){ts=null;var t=e.target;if(!t.
 document.addEventListener('touchmove',function(e){if(!ts)return;var c=e.touches[0],d=ts.y-c.clientY,dx=c.clientX-ts.x;
   if(!ts.dir){if(Math.abs(d)<6&&Math.abs(dx)<6)return;ts.dir=Math.abs(d)>=Math.abs(dx)?1:2}
   if(ts.dir!==1)return;
-  if(mode!=='film'){if(!ts.top||d>0)return;e.preventDefault();if(-d>70){ts=null;if(mode==='view')toPlan();else toFilm(TOTAL-0.4,false)}return}
+  if(mode!=='film'){if(!ts.top||d>0)return;e.preventDefault();if(-d>70){ts=null;if(mode==='view')back();else toFilm(TOTAL-0.4,false)}return}
   e.preventDefault();ts.y=c.clientY;
   if(playing()){ts.acc+=Math.abs(d);if(ts.acc<28)return;stop()}
   scrub(d*0.045)},{passive:false});
@@ -316,22 +318,28 @@ function html(){
 }
 var swT=0;
 function panel(now){var p=$('pin');clearTimeout(swT);if(now){p.innerHTML=html();p.classList.remove('sw');ticks();return}p.classList.add('sw');swT=setTimeout(function(){p.innerHTML=html();p.scrollTop=0;p.classList.remove('sw')},300);ticks()}
-$('pin').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.a==='plan')toPlan();else if(b.dataset.a==='film')toFilm(0,true);else if(b.dataset.t)openView(+b.dataset.t)});
+$('pin').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.a==='plan')(mode==='view'?back():toPlan());else if(b.dataset.a==='film')toFilm(0,true);else if(b.dataset.t)openView(+b.dataset.t)});
 
 var EV=53.5; /* с этого времени зал с гостями */
 function ticks(){var o=$('ticks'),k=mode!=='film'?2:(gt()>=EV?1:0);if(o._k===k&&o._l===lang())return;o._k=k;o._l=lang();o.innerHTML=tt('steps').map(function(x,i){return '<li class="'+(i===k?'on':i<k?'done':'')+'"><button data-c="'+i+'">'+esc(x)+'</button></li>'}).join('')}
 $('ticks').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var c=+b.dataset.c;if(c===2)toPlan();else toFilm(c?EV+0.05:0,true)});
 
 /* ---------- режимы ---------- */
-function show(id){['Lfilm','Lplan','Lview'].forEach(function(x){$(x).classList.toggle('on',x===id)});document.body.className=mode;swh()}
+function show(id){['Lfilm','Lplan','Lview','Lpass'].forEach(function(x){$(x).classList.toggle('on',x===id)});document.body.className=mode;swh()}
 function toFilm(t,play){mode='film';ch=-1;show('Lfilm');seek(t||0,play!==false);icon()}
-function toPlan(){A().pause();$('big').hidden=true;pos=null;mode='plan';cur=null;show('Lplan');marks();panel();icon();if(small){var w=$('planwrap');requestAnimationFrame(function(){w.scrollLeft=w.scrollWidth*0.55})}}
-function openView(n){cur=TB.filter(function(b){return b.n===n})[0];if(!cur)return;mode='view';$('vImg').src=cur.img;show('Lview');panel()}
+function toPlan(){A().pause();PB=0;$('pv').pause();$('big').hidden=true;pos=null;mode='plan';cur=null;show('Lplan');marks();panel();icon();if(small){var w=$('planwrap');requestAnimationFrame(function(){w.scrollLeft=w.scrollWidth*0.55})}}
+function openView(n){cur=TB.filter(function(b){return b.n===n})[0];if(!cur)return;mode='view';$('vImg').src=cur.img;
+  if(cur.pass){var v=$('pv'),c=cur;PB=1;v.src=c.pass;v.onended=function(){if(PB===1&&cur===c){PB=0;show('Lview')}};show('Lpass');panel();var p=v.play();if(p&&p.catch)p.catch(function(){PB=0;show('Lview')});return}
+  show('Lview');panel()}
+/* назад из вида: если у стола есть проход, камера поднимается обратно к схеме */
+var PB=0;
+function back(){if(mode!=='view'||!cur||!cur.back||PB===2){toPlan();return}var v=$('pv');PB=2;v.src=cur.back;v.onended=function(){if(PB===2)toPlan()};show('Lpass');var p=v.play();if(p&&p.catch)p.catch(function(){toPlan()})}
+$('Lpass').addEventListener('click',function(){if(PB===1){PB=0;$('pv').pause();show('Lview')}else toPlan()});
 function marks(){$('svg').innerHTML=TB.map(function(b){return '<g class="mk'+(cur&&cur.n===b.n?' on':'')+'" data-t="'+b.n+'"><circle class="h" cx="'+b.x+'" cy="'+b.y+'" r="46"/><circle class="r" cx="'+b.x+'" cy="'+b.y+'" r="32"/><text x="'+b.x+'" y="'+(b.y+2)+'">'+b.n+'</text></g>'}).join('')}
 $('svg').addEventListener('click',function(e){var g=e.target.closest('.mk');if(g)openView(+g.dataset.t)});
-$('Lview').addEventListener('click',function(){toPlan()});
+$('Lview').addEventListener('click',function(){back()});
 $('vImg').addEventListener('error',function(){if(mode==='view')toPlan()});
-document.addEventListener('keydown',function(e){if(e.key===' '&&mode==='film'){e.preventDefault();if(playing())stop();else start()}if((e.key==='ArrowRight'||e.key==='ArrowDown')&&mode==='film'){var pl=playing();seek(gt()+5,pl)}if((e.key==='ArrowLeft'||e.key==='ArrowUp')&&mode==='film'){var pl2=playing();seek(gt()-5,pl2)}if(e.key==='Escape'&&mode==='view')toPlan()});
+document.addEventListener('keydown',function(e){if(e.key===' '&&mode==='film'){e.preventDefault();if(playing())stop();else start()}if((e.key==='ArrowRight'||e.key==='ArrowDown')&&mode==='film'){var pl=playing();seek(gt()+5,pl)}if((e.key==='ArrowLeft'||e.key==='ArrowUp')&&mode==='film'){var pl2=playing();seek(gt()-5,pl2)}if(e.key==='Escape'&&mode==='view')back()});
 
 /* ---------- язык и запуск ---------- */
 function applyLang(){document.title=lang()==='ru'?'Конференция на 1100 гостей: интерактивная презентация':'Conference, 1100 guests: interactive presentation';$('lsd').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===lang()?'true':'false')});$('lsc').textContent=lang().toUpperCase();$('home').href='https://pravdukhin.com/?lang='+lang()+'#interactive';buildRail();panel(true);swh()}
