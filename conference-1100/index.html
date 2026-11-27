@@ -78,33 +78,33 @@ button{font:inherit;color:inherit}
 
 /* схема */
 .L-plan{background:var(--night-deep);display:flex;align-items:center;justify-content:flex-end}
-.planwrap{position:absolute;left:calc(var(--colw) + 40px);right:var(--pad-r);top:calc(var(--top) + 30px);bottom:40px;display:flex;align-items:center;overflow:auto}
-.planbox{position:relative;width:100%;flex:none}
-.planbox img{display:block;width:100%;height:auto;filter:brightness(1.35)}
+.planwrap{position:absolute;inset:0;overflow:hidden}
+.planbox{position:absolute;inset:0}
+.planbox img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
 .planbox svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.tb circle{fill:rgba(8,20,36,.72);stroke:rgba(232,236,241,.42);stroke-width:2}
-.tb text{fill:rgba(232,236,241,.82);font-family:var(--font);font-weight:400;font-size:21px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.half{fill:rgba(232,236,241,.5);font-family:var(--font);font-weight:300;font-size:120px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.tb circle{fill:rgba(8,20,36,.72);stroke:rgba(232,236,241,.45);stroke-width:1.2}
+.tb text{fill:rgba(232,236,241,.82);font-family:var(--font);font-weight:400;font-size:12.5px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.half{fill:rgba(232,236,241,.5);font-family:var(--font);font-weight:300;font-size:64px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 #svg{transition:opacity .35s ease}
 .mk{cursor:pointer}
-.mk circle.r{fill:rgba(8,20,36,.9);stroke:var(--amber);stroke-width:4}
-.mk circle.h{fill:none;stroke:var(--amber);stroke-width:3;opacity:.45}
+.mk circle.r{fill:rgba(8,20,36,.9);stroke:var(--amber);stroke-width:2.2}
+.mk circle.h{fill:none;stroke:var(--amber);stroke-width:1.6;opacity:.5}
 .mk:hover circle.r,.mk.on circle.r{fill:var(--amber)}
-.mk text{fill:var(--ink);font-family:var(--font);font-weight:500;font-size:23px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.mk text{fill:var(--ink);font-family:var(--font);font-weight:500;font-size:14px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .mk:hover text,.mk.on text{fill:var(--night)}
 .note{font-size:12px;color:var(--dim);margin-top:14px}
 .pclone{position:fixed;z-index:3;transform-origin:0 0;will-change:transform}
 .pclone img{display:block;width:100%;height:100%;filter:brightness(1.35)}
 .L-pass video{transition:opacity .15s linear}
 @media (min-width:761px){
-  .planwrap{left:var(--pad-l);right:var(--pad-r);top:calc(var(--top) + 36px);bottom:auto;display:block;overflow:visible}
-  body.plan .panel{top:calc(var(--top) + 36px + (100vw - 40px) * .2257 + 26px);bottom:86px;right:calc(var(--pad-r) + 150px);width:auto;justify-content:flex-start}
-  body.plan .pin h2{font-size:clamp(24px,2.4vw,34px);margin-bottom:8px}
-  body.plan .pin p{max-width:70ch}
-  body.plan .tl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));column-gap:26px;max-width:980px}
   body.plan .shade{opacity:0}
-  body.plan .ticks{top:calc(var(--top) + 36px + (100vw - 40px) * .2257 + 30px);transform:none}
+  body.plan .panel{top:calc(var(--top) + 14px);bottom:auto;width:min(760px,62vw);justify-content:flex-start}
+  body.plan .pin h2{font-size:clamp(24px,2.4vw,34px);margin-bottom:6px}
+  body.plan .pin p{margin-bottom:10px;max-width:60ch}
+  body.plan .tl,body.plan .note{display:none}
+  body.plan .pin .btn{padding:8px 16px;font-size:14px}
 }
+
 
 .big{position:fixed;z-index:8;left:calc(50% + var(--colw) / 2);top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;border:1px solid var(--amber);background:rgba(8,20,36,.6);cursor:pointer;display:grid;place-items:center}
 .big svg{width:28px;height:28px;fill:var(--ink);margin-left:5px}
@@ -148,9 +148,8 @@ button{font:inherit;color:inherit}
   .swh i{position:relative;width:14px;height:22px;border:1.5px solid var(--ink-soft);border-radius:9px;flex:none}
   .swh i::after{content:"";position:absolute;left:50%;bottom:4px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--amber);animation:sw 1.6s ease-in-out infinite}
   .swh.dn i::after{bottom:auto;top:4px;animation-name:swd}
-  .planwrap{left:0;right:0;top:var(--vt);bottom:auto;height:var(--vh);align-items:center}
-  .planbox{width:auto;height:100%}
-  .planbox img{height:100%;width:auto;max-width:none}
+  .planwrap{left:0;right:0;top:var(--vt);bottom:auto;height:var(--vh);overflow-x:auto;overflow-y:hidden}
+  .planbox{position:relative;inset:auto;height:calc(var(--vh) * 3.2);width:calc(var(--vh) * 3.2 * 1.7778);margin-top:calc(var(--vh) * -1.12)}
   .big{left:50%;top:calc(var(--vt) + 28vw);width:64px;height:64px}
   body.plan .bar,body.view .bar{visibility:hidden}
   body.plan .panel,body.view .panel{bottom:0}
@@ -163,7 +162,7 @@ button{font:inherit;color:inherit}
 
 <div class="stage">
   <div class="layer L-film on" id="Lfilm"><video id="v0" class="on" muted playsinline preload="auto" poster="media/poster.jpg"></video><video id="v1" muted playsinline preload="auto"></video></div>
-  <div class="layer L-plan" id="Lplan"><div class="planwrap" id="planwrap"><div class="planbox"><img id="planImg" src="media/plan.webp" alt="" width="2800" height="632"><svg id="svg" viewBox="0 0 2800 632" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div>
+  <div class="layer L-plan" id="Lplan"><div class="planwrap" id="planwrap"><div class="planbox"><img id="planImg" src="media/plan_f.jpg" alt="" width="1920" height="1080"><svg id="svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div>
   <div class="layer L-view" id="Lview"><img id="vImg" alt=""></div>
   <div class="layer L-pass" id="Lpass"><video id="pv" muted playsinline preload="auto"></video></div>
 </div>
@@ -220,22 +219,22 @@ var CH=[
  {t:77.4,ru:{k:'Схема',l:'Схема зала',h:'От сцены к схеме',p:['Камера поднимается над залом, и он превращается в схему рассадки. На ней отмечены столы: с каждого можно посмотреть, как видно сцену.']},
        en:{k:'Plan',l:'Hall plan',h:'From the stage to the plan',p:['The camera rises above the hall and it turns into the seating plan. Tables are marked on it: from each one you can check the view of the stage.']}}
 ];
-var T={ru:{viewW:'вид на сцену',steps:['3D · репетиция','3D · мероприятие','Схема'],planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на отметку на схеме или на строку в списке: откроется вид на сцену с этого стола.',again:'Смотреть 3D сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад в 3D',swView:'Назад к схеме'},
-       en:{viewW:'view of the stage',steps:['3D · rehearsal','3D · event','Plan'],planL:'Hall plan',planH:'Pick a table',planP:'Tap a mark on the plan or a line in the list: the view of the stage from that table will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
+var T={ru:{viewW:'вид на сцену',steps:['3D · репетиция','3D · мероприятие','Схема'],planL:'Схема зала',planH:'Выберите стол',planP:'Нажмите на выделенный стол: откроется вид на сцену с этого места.',again:'Смотреть 3D сначала',toPlan:'К схеме зала',back:'← К схеме',viewL:'Вид с места',note:'Рабочая демонстрация. Материалы проекта не для публикации.',tbl:'Стол',sw:'Листайте вверх',swPlan:'Назад в 3D',swView:'Назад к схеме'},
+       en:{viewW:'view of the stage',steps:['3D · rehearsal','3D · event','Plan'],planL:'Hall plan',planH:'Pick a table',planP:'Tap a highlighted table: the view of the stage from that seat will open.',again:'Watch the 3D again',toPlan:'To the hall plan',back:'← Back to the plan',viewL:'View from the seat',note:'Working demo. Project materials are not for publication.',tbl:'Table',sw:'Swipe up',swPlan:'Back to 3D',swView:'Back to the plan'}};
 /* столы с видами: координаты на плане 2800x632 поставлены по догадке, сверить с Юрием */
 var TB=[
- {n:1,x:2134,y:318,img:'media/n1.jpg',ru:'Стол B97',en:'Table B97'},
- {n:2,x:2189,y:190,img:'media/n2.jpg',ru:'Стол B76',en:'Table B76'},
- {n:3,x:637,y:448,img:'media/n3b.jpg',ru:'Стол A51',en:'Table A51'},
- {n:4,x:960,y:448,img:'media/n4.jpg',ru:'Стол A56',en:'Table A56'},
- {n:5,x:1801,y:190,img:'media/n5b.jpg',ru:'Стол B70',en:'Table B70'},
- {n:6,x:1616,y:319,img:'media/n6.jpg',ru:'Стол B89',en:'Table B89'},
- {n:7,x:905,y:319,img:'media/n7.jpg',ru:'Стол A33',en:'Table A33'},
- {n:8,x:729,y:125,img:'media/n8.jpg',ru:'Стол A1',en:'Table A1'},
- {n:9,x:2198,y:319,img:'media/n9.jpg',ru:'Стол B98',en:'Table B98'}
+ {n:1,x:1423.8,y:543.8,img:'media/n1.jpg',ru:'Стол B97',en:'Table B97'},
+ {n:2,x:1458.1,y:463.8,img:'media/n2.jpg',ru:'Стол B76',en:'Table B76'},
+ {n:3,x:488.2,y:624.9,img:'media/n3b.jpg',ru:'Стол A51',en:'Table A51'},
+ {n:4,x:690.1,y:624.9,img:'media/n4.jpg',ru:'Стол A56',en:'Table A56'},
+ {n:5,x:1215.7,y:463.8,img:'media/n5b.jpg',ru:'Стол B70',en:'Table B70'},
+ {n:6,x:1100.1,y:544.4,img:'media/n6.jpg',ru:'Стол B89',en:'Table B89'},
+ {n:7,x:655.8,y:544.3,img:'media/n7.jpg',ru:'Стол A33',en:'Table A33'},
+ {n:8,x:545.9,y:423.1,img:'media/n8.jpg',ru:'Стол A1',en:'Table A1'},
+ {n:9,x:1463.7,y:544.4,img:'media/n9.jpg',ru:'Стол B98',en:'Table B98'}
 ];
 
-var TBL=[[1,729,125],[2,794,125],[3,859,125],[4,924,125],[5,508,189],[6,572,190],[7,637,190],[8,702,190],[9,766,190],[10,831,190],[11,896,190],[12,960,190],[13,1024,190],[14,1090,190],[15,1154,190],[16,479,255],[17,545,254],[18,609,254],[19,674,254],[20,739,254],[21,803,255],[22,868,254],[23,933,254],[24,997,254],[25,1062,254],[26,1127,255],[27,517,319],[28,581,319],[29,646,319],[30,711,319],[31,776,319],[32,840,319],[33,905,319],[34,969,319],[35,1034,318],[36,1099,319],[37,1163,319],[38,479,383],[39,545,383],[40,609,383],[41,674,383],[42,739,383],[43,803,383],[44,868,383],[45,933,383],[46,997,383],[47,1062,383],[48,1127,383],[49,507,448],[50,572,448],[51,637,448],[52,702,448],[53,767,448],[54,831,447],[55,896,448],[56,960,448],[57,1025,448],[58,1090,447],[59,1154,448],[60,729,512],[61,924,512],[62,988,512],[63,1053,513],[64,1894,125],[65,1958,125],[66,2023,125],[67,1607,190],[68,1671,190],[69,1737,190],[70,1801,190],[71,1866,190],[72,1931,190],[73,1995,190],[74,2060,189],[75,2125,190],[76,2189,190],[77,2254,190],[78,1580,254],[79,1644,254],[80,1709,254],[81,1774,254],[82,1838,254],[83,1903,254],[84,1968,255],[85,2032,254],[86,2097,254],[87,2162,254],[88,2227,254],[89,1616,319],[90,1681,319],[91,1746,319],[92,1810,319],[93,1875,318],[94,1940,319],[95,2004,319],[96,2069,318],[97,2134,318],[98,2198,319],[99,1580,383],[100,1644,383],[101,1708,383],[102,1773,383],[103,1838,383],[104,1903,383],[105,1967,383],[106,2032,383],[107,2097,383],[108,2162,383],[109,2227,383],[110,1607,448],[111,1671,448],[112,1737,448],[113,1801,448],[114,1866,448],[115,1931,447],[116,1995,448],[117,2060,448],[118,2125,448],[119,2189,448],[120,2254,448],[121,1699,512],[122,1764,512],[123,1829,512],[124,1894,513],[125,1958,512],[126,2023,512]];
+var TBL=[[1,545.9,423.1],[2,586.5,423.1],[3,627.1,423.1],[4,667.7,423.1],[5,407.7,463.1],[6,447.7,463.7],[7,488.3,463.7],[8,529.0,463.7],[9,569.0,463.7],[10,609.6,463.7],[11,650.2,463.7],[12,690.2,463.7],[13,730.2,463.7],[14,771.4,463.7],[15,811.4,463.8],[16,389.5,504.3],[17,430.8,503.7],[18,470.8,503.7],[19,511.4,503.7],[20,552.0,503.7],[21,592.0,504.3],[22,632.7,503.7],[23,673.3,503.7],[24,713.3,503.7],[25,753.9,503.7],[26,794.5,504.3],[27,413.3,544.3],[28,453.3,544.3],[29,493.9,544.3],[30,534.5,544.3],[31,575.1,544.3],[32,615.1,544.3],[33,655.8,544.3],[34,695.8,544.3],[35,736.4,543.7],[36,777.0,544.3],[37,817.0,544.3],[38,389.5,584.3],[39,430.7,584.3],[40,470.7,584.3],[41,511.4,584.3],[42,552.0,584.3],[43,592.0,584.3],[44,632.6,584.3],[45,673.2,584.3],[46,713.2,584.3],[47,753.9,584.3],[48,794.5,584.3],[49,406.9,624.9],[50,447.6,624.9],[51,488.2,624.9],[52,528.8,624.9],[53,569.5,624.9],[54,609.5,624.3],[55,650.1,624.9],[56,690.1,624.9],[57,730.7,624.9],[58,771.3,624.3],[59,811.3,624.9],[60,545.7,664.9],[61,667.6,664.9],[62,707.6,664.9],[63,748.2,665.5],[64,1273.8,423.2],[65,1313.8,423.2],[66,1354.4,423.2],[67,1094.5,463.8],[68,1134.5,463.8],[69,1175.7,463.8],[70,1215.7,463.8],[71,1256.3,463.8],[72,1296.9,463.8],[73,1336.9,463.8],[74,1377.5,463.2],[75,1418.1,463.8],[76,1458.1,463.8],[77,1498.7,463.8],[78,1077.6,503.8],[79,1117.6,503.8],[80,1158.2,503.8],[81,1198.8,503.8],[82,1238.8,503.8],[83,1279.4,503.8],[84,1320.0,504.4],[85,1360.0,503.8],[86,1400.6,503.8],[87,1441.3,503.8],[88,1481.9,503.8],[89,1100.1,544.4],[90,1140.7,544.4],[91,1181.3,544.4],[92,1221.3,544.4],[93,1261.9,543.8],[94,1302.5,544.4],[95,1342.5,544.4],[96,1383.1,543.8],[97,1423.8,543.8],[98,1463.7,544.4],[99,1077.6,584.3],[100,1117.6,584.3],[101,1157.6,584.3],[102,1198.2,584.3],[103,1238.8,584.4],[104,1279.4,584.4],[105,1319.4,584.4],[106,1360.0,584.4],[107,1400.6,584.4],[108,1441.2,584.4],[109,1481.9,584.4],[110,1094.4,624.9],[111,1134.4,624.9],[112,1175.7,624.9],[113,1215.7,625.0],[114,1256.3,625.0],[115,1296.9,624.3],[116,1336.9,625.0],[117,1377.5,625.0],[118,1418.1,625.0],[119,1458.1,625.0],[120,1498.7,625.0],[121,1151.9,664.9],[122,1192.5,664.9],[123,1233.2,664.9],[124,1273.8,665.6],[125,1313.8,664.9],[126,1354.4,664.9]];
 function lang(){return (document.documentElement.lang||'ru').slice(0,2)==='en'?'en':'ru'}
 function tt(k){return T[lang()][k]}
 
@@ -368,10 +367,10 @@ function back(){var c=cur;if(mode!=='view'||!c||!c.back||!c.a||PB){toPlan();retu
     requestAnimationFrame(function(){requestAnimationFrame(function(){cl.style.transition='transform 1.1s cubic-bezier(.45,0,.25,1)';cl.style.transform='none';
       setTimeout(function(){PB=0;show('Lplan');$('svg').style.opacity=1;setTimeout(function(){cl.remove()},520)},1120)})})}}
 $('Lpass').addEventListener('click',function(){if(PB===1){var c=cur;$('pv').pause();endIn(c)}else if(PB===2){$('pv').pause();PB=0;toPlan();$('svg').style.opacity=1;[].forEach.call(document.querySelectorAll('.pclone'),function(x){x.remove()})}});
-function marks(){var o='<text class="half" x="230" y="316">A</text><text class="half" x="2570" y="316">B</text>';
-  TBL.forEach(function(t){var v=TB.filter(function(b){return Math.abs(b.x-t[1])<8&&Math.abs(b.y-t[2])<8})[0];
-    if(v)o+='<g class="mk'+(cur&&cur.n===v.n?' on':'')+'" data-t="'+v.n+'"><circle class="h" cx="'+t[1]+'" cy="'+t[2]+'" r="40"/><circle class="r" cx="'+t[1]+'" cy="'+t[2]+'" r="29"/><text x="'+t[1]+'" y="'+(t[2]+1)+'">'+t[0]+'</text></g>';
-    else o+='<g class="tb"><circle cx="'+t[1]+'" cy="'+t[2]+'" r="24"/><text x="'+t[1]+'" y="'+(t[2]+1)+'">'+t[0]+'</text></g>'});
+function marks(){var o='<text class="half" x="233.9" y="542.4">A</text><text class="half" x="1696.2" y="542.6">B</text>';
+  TBL.forEach(function(t){var v=TB.filter(function(b){return Math.abs(b.x-t[1])<4&&Math.abs(b.y-t[2])<4})[0];
+    if(v)o+='<g class="mk'+(cur&&cur.n===v.n?' on':'')+'" data-t="'+v.n+'"><circle class="h" cx="'+t[1]+'" cy="'+t[2]+'" r="24"/><circle class="r" cx="'+t[1]+'" cy="'+t[2]+'" r="17.5"/><text x="'+t[1]+'" y="'+(t[2]+1)+'">'+t[0]+'</text></g>';
+    else o+='<g class="tb"><circle cx="'+t[1]+'" cy="'+t[2]+'" r="14.5"/><text x="'+t[1]+'" y="'+(t[2]+1)+'">'+t[0]+'</text></g>'});
   $('svg').innerHTML=o}
 $('svg').addEventListener('click',function(e){var g=e.target.closest('.mk');if(g)openView(+g.dataset.t)});
 $('Lview').addEventListener('click',function(){back()});
